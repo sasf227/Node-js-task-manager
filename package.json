@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/sasf227/Node-js-task-manager#readme",
   "dependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "bcrypt": "^6.0.0",
     "ejs": "^5.0.1",
     "express": "^5.2.1",
     "prisma": "^6.19.2"

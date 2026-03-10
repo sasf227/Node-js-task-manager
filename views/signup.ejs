@@ -15,7 +15,9 @@
         <form>
             <input type="text" name="name" placeholder="Full Name" id="name" required>
             <input type="email" name="email" placeholder="Email Address" id="email" required>
+            <label for="password"></label>
             <input type="password" name="password" placeholder="Password" id="password" required>
+            <label for="password"></label>
             <input type="password" name="confirm_password" placeholder="Confirm Password" id="confirm_password" required>
         </form>
 
@@ -45,7 +47,15 @@
                 password,
                 confirm_password
             })
-        })
+        });
+
+        const data = await res.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else if(data.error) {
+            console.log(data.error)
+            document.querySelector('.pwd-error').textContent = 'Your text here';
+        }
     }
 </script>
 </body>

@@ -1,5 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import { ok } from 'node:assert';
+import { error } from 'node:console';
 
 const app: express.Application = express();
 const port: number = 3000;
@@ -22,7 +24,11 @@ app.get('/signup', (_req, _res) => {
 
 app.post('/authorise', (_req, _res) => {
     const {name, email, password, confirm_password} = _req.body;
-    console.log(name, email, password, confirm_password)
+    if (password === confirm_password) {
+        _res.send({url: '/login'});
+    } else {
+        _res.status(400).json({ error: "Passwords do not match" });
+    }
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
