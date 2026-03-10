@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-class passHash {
+export default class passHash {
     async hashPassword(password: string): Promise<string> {
         const saltRounds: number = 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -15,7 +15,4 @@ class passHash {
     };
 };
 
-const pass = '123';
-const pas = new passHash;
-const hash = pas.hashPassword(pass);
-const check = pas.checkPassword(pass, hash)
+
