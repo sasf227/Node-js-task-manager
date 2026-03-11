@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<title>TaskFlow Dashboard</title>
+
+<link rel="stylesheet" href="/css/reset.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/dashboard.css">
+
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- Sidebar -->
+
+<aside class="sidebar">
+
+<h2 class="logo">TaskFlow</h2>
+
+<nav>
+
+<a class="active">Home</a>
+<a>Chat</a>
+<a>Calendar</a>
+<a>Notifications</a>
+<a>Settings</a>
+
+</nav>
+
+<button class="create-btn">+ New Task</button>
+
+</aside>
+
+<!-- Main Content -->
+
+<main class="main">
+
+<header class="topbar">
+
+<div class="user-area">
+
+<div class="user-info">
+<h1>Good Morning 👋</h1>
+<p class="username">John Doe</p>
+</div>
+
+<img class="avatar" src="https://i.pravatar.cc/80" alt="avatar">
+
+</div>
+
+<div class="task-controls">
+
+<input class="search" placeholder="Search task">
+
+<select class="sort">
+<option>Sort by date</option>
+<option>Sort by priority</option>
+<option>Sort by progress</option>
+</select>
+
+</div>
+
+</header>
+
+<!-- Stats -->
+
+<section class="stats">
+
+<div class="stat-card">
+<h3>12</h3>
+<p>Total Tasks</p>
+</div>
+
+<div class="stat-card">
+<h3>4</h3>
+<p>In Progress</p>
+</div>
+
+<div class="stat-card">
+<h3>8</h3>
+<p>Completed</p>
+</div>
+
+</section>
+
+
+<!-- Tasks -->
+
+<section class="tasks">
+
+<h2>Today</h2>
+<p class="section-desc">Due today</p>
+
+<div class="task-grid" id="todayTasks"></div>
+
+
+<h2>Week</h2>
+<p class="section-desc">Due this week</p>
+
+<div class="task-grid" id="weekTasks">
+    <div class="task-card">
+
+<div class="task-header">
+<h3>Finish SQL Project</h3>
+<span class="priority high">High</span>
+</div>
+
+<p>Complete login with MariaDB</p>
+
+<div class="progress">
+
+<div class="progress-bar" style="width:60%"></div>
+
+</div>
+
+<div class="task-footer">
+
+<span>Due Today</span>
+
+<div class="team">
+
+<img src="https://i.pravatar.cc/30?img=1">
+<img src="https://i.pravatar.cc/30?img=2">
+
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<h2>Month</h2>
+<p class="section-desc">Due this month</p>
+
+<div class="task-grid" id="monthTasks"></div>
+
+</section>
+
+</main>
+
+</div>
+
+</body>
+</html>
