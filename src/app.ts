@@ -1,8 +1,10 @@
 import express from 'express';
-import bodyParser from 'body-parser';
+import login_Check from './check.ts';
 import passHash from './passhash.ts'
 import type {authetnicate_user_signup_request, keys, err} from './schemas.ts'
-import { errorMonitor } from 'node:events';
+import bodyParser from 'body-parser';
+
+
 
 
 
@@ -31,30 +33,12 @@ app.get('/signup', (_req, _res) => {
 app.post('/signup', (_req, _res) => {
     const body: authetnicate_user_signup_request = _req.body;
     const b_keys: keys<authetnicate_user_signup_request> = ['name', 'email', 'password', 'confirm_password'];
-    const isNum = !(isNaN(Number(body.name)) || isNaN(Number(body.email)));
-    const pwd_match = body.password !== body.confirm_password;
-    let error: err = {
-            num_error: '',
-            empty_error: '',
-            pwd_error: '',
-        };
+    const num_keys = ['name', 'email'];
+    const signup = new login_Check(_req, _res, body);
 
-    for (const key of b_keys) {
-        if (!(key in body) ) {
-            _res.status(400).send();
-        } else if (!body[key]) {
-            error.empty_error=`Field ${key} cannot be empty!`;
-            _res.send(error);
-        };
-    };
-
-    if (isNum) {
-            error.num_error = 'Name or email cannot be a number!' 
-            _res.send(error);
-        } else if (pwd_match) {
-            error.pwd_error = 'Passwords does not matches'
-            _res.send(error);
-    };
+    signup.emptyCheck(b_keys);
+    signup.nameCheck(num_keys);
+    signup.isMatchCheck('password', 'confirm_password');
     _res.send({url: '/home'})
     
 });

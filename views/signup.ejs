@@ -15,12 +15,10 @@
         <form>
             <input type="text" name="name" placeholder="Full Name" id="name" required>
             <input type="email" name="email" placeholder="Email Address" id="email" required>
-            <label for="password" id="pwd-error"></label>
             <input type="password" name="password" placeholder="Password" id="password" required>
-            <label for="password" id="c_pwd-error"></label>
             <input type="password" name="confirm_password" placeholder="Confirm Password" id="confirm_password" required>
         </form>
-
+        <p id="error-handler"></p>
         <button type="button" class="btn primary full" onclick="signup()">Create Account</button>
         <p class="switch-text">
             Already have an account?
@@ -35,6 +33,7 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const confirm_password = document.getElementById('confirm_password').value;
+        const error_handler = document.getElementById('error-handler');
 
         const res = await fetch('/signup', {
             method: "POST",
@@ -53,10 +52,8 @@
         if (data.url) {
             window.location.href = data.url;
         } else if(data.error) {
-            console.log(data.error.pwd_error)
-            document.getElementById("pwd-error").innerHTML = `${data.error.num_error}`;
-            document.getElementById("c_pwd-error").innerHTML = `${data.error.num_error}`;
-        }
+            error_handler.innerHTML=`${data.error}`;
+        };
     }
 </script>
 </body>

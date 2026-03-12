@@ -71,13 +71,9 @@ background:#f5f7fb;
 /* Topbar */
 
 .topbar{
-
-display:flex;
+display:grid;
 justify-content:space-between;
 align-items:center;
-
-margin-bottom:30px;
-
 }
 
 .search{
@@ -85,7 +81,8 @@ margin-bottom:30px;
 padding:10px;
 border-radius:8px;
 border:1px solid #ddd;
-width:200px;
+width:300px; 
+margin-right: 35px;
 
 }
 
