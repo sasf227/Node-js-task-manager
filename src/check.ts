@@ -1,6 +1,3 @@
-import express from 'express';
-import { error } from 'node:console';
-
 export default class login_Check {
     req: any;
     res: any;
@@ -11,6 +8,7 @@ export default class login_Check {
         this.body = body
     }
 
+    //section 1
     isNum<T>(value: T): boolean {
         const isNum: boolean = !(isNaN(Number(value)));
         return isNum;
@@ -26,18 +24,6 @@ export default class login_Check {
         return;
     };
 
-    nameCheck(num_keys: Array<string>): void {
-        const usernameRegex = /^(?=.{1,32}$)[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;
-        const isValidName: boolean = usernameRegex.test(this.body[0]);
-
-        if (!isValidName) {
-            this.res.send({error: `Name must be 1–32 characters long and may contain letters, numbers, spaces, underscores (_), dots (.), and dashes (-).`});
-            return
-        };
-
-        this.isNumCheck(num_keys);
-    };
-
     isMatch(key: string, match_key: string): boolean {
         const isMatch: boolean = this.body[key] === this.body[match_key];
         return isMatch;
@@ -50,6 +36,7 @@ export default class login_Check {
         };
     };
 
+    // section 2
     emptyCheck(keys: Array<string>): void {
         if (!this.body) {
             this.res.status(400).send()
@@ -65,4 +52,53 @@ export default class login_Check {
             };
         };
     };
+
+    nameCheck(name_key: string): void {
+        const usernameRegex: RegExp = /^(?=.{1,32}$)[a-zA-Z0-9_.-]+( [a-zA-Z0-9_.-]+)*$/;
+        const isValidName: boolean = usernameRegex.test(this.body[name_key]);
+
+        if (!isValidName) {
+            this.res.send({error: `Name must be 1–32 characters long and may contain letters, numbers, spaces, underscores (_), dots (.), and dashes (-).`});
+            return
+        };
+    };
+
+    emailCheck(email_key: string): void {
+        const emailRegex:RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]{2,254}$/;
+        const isValidEmail: boolean = emailRegex.test(this.body[email_key]);
+
+        if (!isValidEmail) {
+            this.res.send({error: `Please enter a valid email address.`});
+            return;
+        };
+    };
+
+    pwdCheck(pwd_key: string): void {
+        const passwordRegex: RegExp = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,64}$/;
+        const isValidPwd: boolean = passwordRegex.test(this.body[pwd_key]);
+
+        if (!isValidPwd) {
+            this.res.send({error: `Password must be 8–64 characters and include an uppercase letter, a lowercase letter, a number, and a special character.`});
+            return;
+        };
+    };
+
+    //section 3
+    signup(keys: Array<string>, num_keys: Array<string>, name_key: string, email_key: string, pwd_key: string, pwd_match_key: string): void {
+        this.emptyCheck(keys);
+        this.isNumCheck(num_keys);
+        this.nameCheck(name_key);
+        this.emailCheck(email_key);
+        this.pwdCheck(pwd_key);
+        this.isMatchCheck(pwd_key, pwd_match_key);
+        return;
+    };
+
+    login(keys: Array<string>, num_keys: Array<string>, email_key: string, pwd_key: string) {
+        this.emptyCheck(keys);
+        this.isNumCheck(num_keys);
+        this.emailCheck(email_key);
+        this.pwdCheck(pwd_key);
+        return;
+    }
 }
