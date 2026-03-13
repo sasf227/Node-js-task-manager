@@ -3,7 +3,7 @@ import login_Check from './check.ts';
 import passHash from './passhash.ts'
 import type {authenticate_user_signup_request, authenticate_user_login_reques , keys} from './schemas.ts'
 import bodyParser from 'body-parser';
-
+import bcrypt from 'bcrypt';
 
 
 
@@ -31,8 +31,13 @@ app.post('/login', (_req, _res) => {
     const keys: keys<authenticate_user_login_reques> = ['email', 'password'];
     const num_keys = ['email'];
     const login = new login_Check(_req, _res, body);
+    const pwd = new passHash;
+
 
     login.login(keys, num_keys, 'email', 'password')
+    const hashed_pwd = pwd.hashPassword(body.password);
+    pwd.checkPassword(body.password, hashed_pwd);
+    
 });
 
 
@@ -48,6 +53,7 @@ app.post('/signup', (_req, _res) => {
 
     // protected from backend
     signup.signup(keys, num_keys, 'name', 'email', 'password', 'confirm_password')
+
     _res.send({url: '/home'})
     
 });

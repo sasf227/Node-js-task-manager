@@ -26,6 +26,30 @@
     </div>
 </div>
 
+<script>
+    async function signup() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const error_handler = document.getElementById('error-handler');
 
+        const res = await fetch('/login', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
+
+        const data = await res.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else if(data.error) {
+            error_handler.innerHTML=`${data.error}`;
+        };
+    }
+</script>
 </body>
 </html>
