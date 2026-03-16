@@ -3,8 +3,7 @@ import login_Check from './check.ts';
 import passHash from './passhash.ts'
 import type {authenticate_user_signup_request, authenticate_user_login_reques , keys} from './schemas.ts'
 import bodyParser from 'body-parser';
-import bcrypt from 'bcrypt';
-
+import {pool} from './db_connect.ts'
 
 
 
@@ -26,7 +25,7 @@ app.get('/login', (_req, _res) => {
     _res.render('login', {result: null});
 });
 
-app.post('/login', (_req, _res) => {
+app.post('/login', async function login(_req, _res) {
     const body: authenticate_user_login_reques = _req.body;
     const keys: keys<authenticate_user_login_reques> = ['email', 'password'];
     const num_keys = ['email'];
@@ -36,8 +35,10 @@ app.post('/login', (_req, _res) => {
 
     login.login(keys, num_keys, 'email', 'password')
     const hashed_pwd = pwd.hashPassword(body.password);
-    pwd.checkPassword(body.password, hashed_pwd);
-    
+    const check_pwd = await pwd.checkPassword(body.password, hashed_pwd);
+    if (check_pwd) {
+        _res.send({url: "/home"})
+    }
 });
 
 
@@ -50,11 +51,16 @@ app.post('/signup', (_req, _res) => {
     const keys: keys<authenticate_user_signup_request> = ['name', 'email', 'password', 'confirm_password'];
     const num_keys = ['name', 'email'];
     const signup = new login_Check(_req, _res, body);
-
+    pool.query('INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING *', [body.name, body.email, body.password], (error, results) => {
+        if (error) {
+            throw error
+        }
+        _res.status(201).send(`User added with ID: ${results.rows[0].id}`)
+    })
     // protected from backend
-    signup.signup(keys, num_keys, 'name', 'email', 'password', 'confirm_password')
-
-    _res.send({url: '/home'})
+    // signup.signup(keys, num_keys, 'name', 'email', 'password', 'confirm_password')
+    
+    // _res.send({url: '/home'})
     
 });
 

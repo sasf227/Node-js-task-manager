@@ -12,12 +12,12 @@
 <div class="form-container">
     <div class="form-card">
         <h2>Welcome Back</h2>
-        <form action="#" method="POST">
-            <input type="email" name="email" placeholder="Email Address" required>
-            <input type="password" name="password" placeholder="Password" required>
-
-            <button type="submit" class="btn primary full">Login</button>
+        <form>
+            <input type="email" name="email" id="email" placeholder="Email Address" required>
+            <input type="password" name="password" id="password" placeholder="Password" required>
+            <p id="error-handler"></p>
         </form>
+        <button type="button" onclick="login()" class="btn primary full">Login</button>
 
         <p class="switch-text">
             Don't have an account?
@@ -27,7 +27,8 @@
 </div>
 
 <script>
-    async function signup() {
+    async function login() {
+        event.preventDefault();
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const error_handler = document.getElementById('error-handler');

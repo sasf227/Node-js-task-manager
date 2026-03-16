@@ -9,7 +9,7 @@ export default class passHash {
     };
 
     async checkPassword(password: string, hashedPassword: Promise<string>): Promise<boolean> {
-        const match = await bcrypt.compare(password, await hashedPassword);
+        const match: boolean = await bcrypt.compare(password, await hashedPassword);
         console.log(match ? 'Passwords match' : 'Passwords do not match');
         return match;
     };
