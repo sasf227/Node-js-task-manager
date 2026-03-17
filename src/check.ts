@@ -17,8 +17,7 @@ export default class login_Check {
     isNumCheck(num_keys: Array<string>): void {
         for(const key of num_keys) {
             if (this.isNum(this.body[key])) {
-                this.res.send({error: `The ${key} field can't be a number!`});
-                return;
+                return this.res.send({error: `The ${key} field can't be a number!`});
             };
         };
         return;
@@ -31,24 +30,20 @@ export default class login_Check {
 
     isMatchCheck(key: string, match_key: string): void {
         if (!this.isMatch(key, match_key)) {
-            this.res.send({error: `The ${key} field and ${match_key} doesn't matches!`});
-            return
+            return this.res.send({error: `The ${key} field and ${match_key} doesn't matches!`});
         };
     };
 
     // section 2
     emptyCheck(keys: Array<string>): void {
         if (!this.body) {
-            this.res.status(400).send()
-            return;
+            return this.res.status(400).send()
         }
         for (const key of keys) {
             if (!(key in this.body)) {
-                this.res.status(400).send()
-                return;
+                return this.res.status(400).send();
             } else if (!(this.body[key])) {
-                this.res.send({error: `The ${key} field can't be empty!`});
-                return;
+                return this.res.send({error: `The ${key} field can't be empty!`});
             };
         };
     };
@@ -58,8 +53,7 @@ export default class login_Check {
         const isValidName: boolean = usernameRegex.test(this.body[name_key]);
 
         if (!isValidName) {
-            this.res.send({error: `Name must be 1–32 characters long and may contain letters, numbers, spaces, underscores (_), dots (.), and dashes (-).`});
-            return
+            return this.res.send({error: `Name must be 1–32 characters long and may contain letters, numbers, spaces, underscores (_), dots (.), and dashes (-).`});
         };
     };
 
@@ -68,8 +62,7 @@ export default class login_Check {
         const isValidEmail: boolean = emailRegex.test(this.body[email_key]);
 
         if (!isValidEmail) {
-            this.res.send({error: `Please enter a valid email address.`});
-            return;
+            return this.res.send({error: `Please enter a valid email address.`});
         };
     };
 
@@ -78,8 +71,7 @@ export default class login_Check {
         const isValidPwd: boolean = passwordRegex.test(this.body[pwd_key]);
 
         if (!isValidPwd) {
-            this.res.send({error: `Password must be 8–64 characters and include an uppercase letter, a lowercase letter, a number, and a special character.`});
-            return;
+            return this.res.send({error: `Password must be 8–64 characters and include an uppercase letter, a lowercase letter, a number, and a special character.`});
         };
     };
 

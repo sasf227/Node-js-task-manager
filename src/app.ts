@@ -1,9 +1,10 @@
-import express from 'express';
+import express, { response } from 'express';
 import login_Check from './check.ts';
 import passHash from './passhash.ts'
 import type {authenticate_user_signup_request, authenticate_user_login_reques , keys} from './schemas.ts'
 import bodyParser from 'body-parser';
 import {pool} from './db_connect.ts'
+import { error } from 'node:console';
 
 
 
@@ -33,12 +34,20 @@ app.post('/login', async function login(_req, _res) {
     const pwd = new passHash;
 
 
-    login.login(keys, num_keys, 'email', 'password')
+    // login.login(keys, num_keys, 'email', 'password')
     const hashed_pwd = pwd.hashPassword(body.password);
     const check_pwd = await pwd.checkPassword(body.password, hashed_pwd);
-    if (check_pwd) {
-        _res.send({url: "/home"})
-    }
+
+    const result = await pool.query('SELECT * FROM users WHERE email = $1', [body.email]);
+    const user = result.rows[0]
+
+    if (!user) {
+        return _res.status(400).json({ error: "Invalid email or password" });
+    } else if (user.password === body.password) {
+        return _res.send({url: "/home"});
+    } else {
+        return _res.status(400).json({ error: "Invalid email or password" });
+    };
 });
 
 
