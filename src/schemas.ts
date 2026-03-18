@@ -9,6 +9,12 @@ export type authenticate_user_login_reques = {
     password: string;
 };
 
+export type user_db_schema = {
+    username: string;
+    email: string;
+    password: string;
+}
+
 export type keys<T> = Array<keyof T>;
 
 
