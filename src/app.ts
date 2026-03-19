@@ -8,7 +8,8 @@ import bodyParser from 'body-parser';
 import {pool} from './db_connect.ts'
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
-import { emitWarning } from 'process';
+import { v4 } from 'uuid';
+import { error } from 'node:console';
 
 
 export const app: express.Application = express();
@@ -33,7 +34,7 @@ app.get('/login', (_req, _res) => {
     _res.render('login', {result: null});
 });
 
-app.post('/login', async function login(_req, _res) {
+app.post('/login', express.urlencoded({extended: true}), async function login(_req, _res) {
     // variables
     const body: authenticate_user_login_reques = _req.body;
     const keys: keys<authenticate_user_login_reques> = ['email', 'password'];
@@ -46,21 +47,32 @@ app.post('/login', async function login(_req, _res) {
 
     //db operation
     const result = await db.getByValue<user_db_schema> ('users', ['email'], body.email);
-    const user = result.rows[0]
-
-    // password hash check
-    const check_pwd = await pwd.checkPassword(body.password, user.password);
+    const user = result.rows[0];    
 
     // frontend(right user data) check
-    login.login(keys, num_keys, 'email', 'password')
+    login.login(keys, num_keys, 'email', 'password');
 
     //check of credentials
     if (!user) {
         return _res.status(400).json({ error: "User not found" });
-    } else if (check_pwd) { // if password hash = true redirect to home page
-        return _res.send({url: "/home"});
-    } else {
-        return _res.status(400).json({ error: "Invalid email or password" });
+    } else { 
+        // password hash check
+        const check_pwd = await pwd.checkPassword(body.password, user.password);
+
+        if (check_pwd) { // if password hach is match, creates session and redirects to home
+            // setting the cookies
+            _req.session.user = {
+                uuid: user.uuid,
+                username: user.username,
+                email: user.email,
+            };
+            _res.cookie("sessionID", _req.sessionID);
+
+            // redirect to home 
+            return _res.send({url: "/home"});
+        } else {
+            return _res.status(400).json({ error: "Invalid email or password" });
+        };
     };
 });
 
@@ -74,7 +86,7 @@ app.post('/signup', async function signup(_req, _res) {
     const body: authenticate_user_signup_request = _req.body;
     const keys: keys<authenticate_user_signup_request> = ['name', 'email', 'password', 'confirm_password'];
     const num_keys = ['name', 'email'];
-
+    const uuid = v4();
     // classes
     const signup = new login_Check(_req, _res, body);
     const db = new dbOperations;
@@ -87,19 +99,33 @@ app.post('/signup', async function signup(_req, _res) {
     const hashed_pwd = await pwd.hashPassword(body.password);
 
     //db operation
-    db.insertInto<user_db_schema> ('users', ['username', 'email', 'password'], [body.name, body.email, hashed_pwd])
+    db.insertInto<user_db_schema> ('users', ['username', 'email', 'password', 'uuid'], [body.name, body.email, hashed_pwd, uuid,]);
+    const result = await db.getByValue<user_db_schema> ('users', ['email'], body.email);
+    const user = result.rows[0];
 
-    // redirecting home
-    _res.send({url: '/home'})
-    
+    // setting the cookies 
+    if (!user) {
+        _res.send({error: "Couldn't create a user, try again later!"})
+    } else {
+        _req.session.user = {
+            uuid: uuid,
+            username: body.name,
+            email: body.email,
+        };
+        _res.cookie("sessionID", _req.sessionID);
+
+        // redirecting home
+        _res.send({url: '/home'})
+    };
 });
 
 app.get('/home', async function home(_req, _res) {
     if (_req.session.user) {
-        _res.render('home')
+        const userData = _req.session.user
+        _res.render('home', {uuid: userData.uuid, username: userData.username, email: userData.email})
     } else {
-        _res.send({url: '/login'}) 
-    }
+        _res.redirect('/login') 
+    };
 
 });
 

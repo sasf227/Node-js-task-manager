@@ -8,12 +8,12 @@ export default class dbOperations {
         return result;
     };
 
-    async getByValue<T> (table: string, key: string | keys<T>, value: string) {
+    async getByValue<T> (table: string, key: Array<keyof T>, value: string) {
         const result = await pool.query(`SELECT * FROM ${table} WHERE ${key} = $1`, [value]);
         return result;
     };
 
-    async insertInto<T> (table: string, keys: Array<string> | keys<T>, values: Array<any>) {
+    async insertInto<T> (table: string, keys: Array<keyof T>, values: Array<string>) {
         const keyString = keys.toString();
         const valNum: Array<string> = []
         for (let i = 1; i <= values.length; i++) {

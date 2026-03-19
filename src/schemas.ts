@@ -13,6 +13,7 @@ export type user_db_schema = {
     username: string;
     email: string;
     password: string;
+    uuid: string;
 }
 
 export type keys<T> = Array<keyof T>;
