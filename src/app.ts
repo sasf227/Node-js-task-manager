@@ -91,8 +91,35 @@ app.post('/login', express.urlencoded({extended: true}), async function login(_r
 });
 
 
-app.get('/signup', (_req, _res) => {
-    _res.render('signup', {result: null});
+app.get('/signup', async function signup_page(_req, _res) {
+    if (_req.cookies['JWT'] && _req.cookies['WsessionID']) {
+        // variables
+        const weeklySession = _req.cookies.WsessionID;
+
+        // classes
+        const jwt = new jwtAuthorization(_req, _res, 'gfg_jwt_secret_key', 'gfg_token_header_key');
+        const db = new dbOperations;
+
+        const data = await jwt.decodeJWT();
+        if (data && data.WsessionID === weeklySession) {
+            const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
+            const user = check_result.rows[0];
+            if (user && user.username === data.username && user.email === data.email && user.uuid === data.uuid) {
+                _req.session.user = {
+                    uuid: data.uuid,
+                    username: data.username,
+                    email: data.email,
+                };
+
+                _res.cookie("sessionID", _req.sessionID);
+                _res.redirect('/home')
+            } else {_res.render('signup', {result: null});};
+        } else {_res.render('signup', {result: null});};
+    } else {
+        _res.render('signup', {result: null});
+    };
+
+
 });
 
 app.post('/signup', async function signup(_req, _res) {
@@ -101,11 +128,6 @@ app.post('/signup', async function signup(_req, _res) {
     const keys: keys<authenticate_user_signup_request> = ['name', 'email', 'password', 'confirm_password'];
     const num_keys = ['name', 'email'];
     const uuid = v4();
-    const user_data= {
-        username: body.name,
-        email: body.email,
-        uuid: uuid,
-    }
 
     // classes
     const signup = new login_Check(_req, _res, body);
@@ -137,15 +159,29 @@ app.post('/signup', async function signup(_req, _res) {
     if (!user) {
         _res.send({error: "Couldn't create a user, try again later!"});
     } else {
+        // session data
         _req.session.user = {
             uuid: uuid,
             username: body.name,
             email: body.email,
         };
+
+        // jwt data
+        const user_data= {
+            username: body.name,
+            email: body.email,
+            uuid: uuid,
+            WsessionID: _req.sessionID,
+        }; 
+
+        if (!(_req.cookies.WsessionID)) {
+            _res.cookie("WsessionID", _req.sessionID, { maxAge: 7 * 24 * 60 * 60 * 1000 });
+        };
         _res.cookie("sessionID", _req.sessionID);
-        jwt.signJWT(user_data, 1, "h")
+        jwt.signJWT(user_data, 1);
+
         // redirecting home
-        _res.send({url: '/home'})
+        _res.send({url: '/home'});
     };
 });
 

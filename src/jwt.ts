@@ -12,9 +12,9 @@ export default class jwtAuthorization {
         this.jwtSecretKey = jwtSecretKey;
         this.tokenHeaderKey = tokenHeaderKey;
     }
-    async signJWT<T extends object> (data: T | Record<string, any>, exp: number = 1, timetype: "h" = "h") {
-        const token = jwt.sign(data, this.jwtSecretKey, {expiresIn: `${exp}${timetype}`})
-        this.res.cookie("JWT", token);
+    async signJWT<T extends object> (data: T | Record<string, any>, exp: number = 1) {
+        const token = jwt.sign(data, this.jwtSecretKey, {expiresIn: `${exp}h`})
+        this.res.cookie("JWT", token, { maxAge: exp * 60 * 60 * 1000});
     };
 
     async verifyJWT(): Promise<boolean> {
