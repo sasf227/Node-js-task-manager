@@ -4,6 +4,7 @@ import dbOperations from './db_operations.ts';
 import Authenticate from './authenticate.ts';
 import jwtAuthorization from './jwt.ts'
 import passHash from './passhash.ts'
+import cookiesAuth from './cookies.ts'
 import type {authenticate_user_signup_request, authenticate_user_login_reques, user_db_schema, keys} from './schemas.ts'
 import bodyParser from 'body-parser';
 import {pool} from './db_connect.ts'
@@ -11,8 +12,7 @@ import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { v4 } from 'uuid';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
-import type { constants } from 'node:buffer';
+
 
 
 const app: express.Application = express();
@@ -92,32 +92,42 @@ app.post('/login', express.urlencoded({extended: true}), async function login(_r
 
 
 app.get('/signup', async function signup_page(_req, _res) {
-    if (_req.cookies['JWT'] && _req.cookies['WsessionID']) {
-        // variables
-        const weeklySession = _req.cookies.WsessionID;
-
-        // classes
-        const jwt = new jwtAuthorization(_req, _res, 'gfg_jwt_secret_key', 'gfg_token_header_key');
-        const db = new dbOperations;
-
-        const data = await jwt.decodeJWT();
-        if (data && data.WsessionID === weeklySession) {
-            const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
-            const user = check_result.rows[0];
-            if (user && user.username === data.username && user.email === data.email && user.uuid === data.uuid) {
-                _req.session.user = {
-                    uuid: data.uuid,
-                    username: data.username,
-                    email: data.email,
-                };
-
-                _res.cookie("sessionID", _req.sessionID);
-                _res.redirect('/home')
-            } else {_res.render('signup', {result: null});};
-        } else {_res.render('signup', {result: null});};
+    const cookies = new cookiesAuth(_req, _res, ['JWT', 'WsessionID']);
+    const tokens = await cookies.cookiesObj();
+    const auth = await cookies.cookiesAuth(tokens);
+    if (!auth) {
+        _res.send('cookies not found');
     } else {
-        _res.render('signup', {result: null});
-    };
+        _res.send('cookies found')
+    }
+    
+    // if (_req.cookies['JWT'] && _req.cookies['WsessionID']) {
+    //     // variables
+    //     const weeklySession = _req.cookies.WsessionID;
+
+    //     // classes
+    //     const jwt = new jwtAuthorization(_req, _res, 'gfg_jwt_secret_key', 'gfg_token_header_key');
+    //     const db = new dbOperations;
+
+    //     const verifyJWT = await jwt.verifyJWT()
+    //     const data = await jwt.decodeJWT();
+    //     if (verifyJWT && data && data.WsessionID === weeklySession) {
+    //         const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
+    //         const user = check_result.rows[0];
+    //         if (user && user.username === data.username && user.email === data.email && user.uuid === data.uuid) {
+    //             _req.session.user = {
+    //                 uuid: data.uuid,
+    //                 username: data.username,
+    //                 email: data.email,
+    //             };
+
+    //             _res.cookie("sessionID", _req.sessionID);
+    //             _res.redirect('/home')
+    //         } else {_res.render('signup', {result: null});};
+    //     } else {_res.render('signup', {result: null});};
+    // } else {
+    //     _res.render('signup', {result: null});
+    // };
 
 
 });
@@ -178,7 +188,7 @@ app.post('/signup', async function signup(_req, _res) {
             _res.cookie("WsessionID", _req.sessionID, { maxAge: 7 * 24 * 60 * 60 * 1000 });
         };
         _res.cookie("sessionID", _req.sessionID);
-        jwt.signJWT(user_data, 1);
+        jwt.signJWT(user_data, 7 * 24);
 
         // redirecting home
         _res.send({url: '/home'});
