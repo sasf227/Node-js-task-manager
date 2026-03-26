@@ -43,8 +43,34 @@ app.get("/user/validateToken", (_req, _res) => {
 });
 
 
-app.get('/login', (_req, _res) => {
-    _res.render('login', {result: null});
+app.get('/login', async function login_page(_req, _res) {
+    if (_req.cookies['JWT'] && _req.cookies['WsessionID']) {
+        // variables
+        const weeklySession = _req.cookies.WsessionID;
+
+        // classes
+        const jwt = new jwtAuthorization(_req, _res, 'gfg_jwt_secret_key', 'gfg_token_header_key');
+        const db = new dbOperations;
+
+        const verifyJWT = await jwt.verifyJWT()
+        const data = await jwt.decodeJWT();
+        if (verifyJWT && data && data.WsessionID === weeklySession) {
+            const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
+            const user = check_result.rows[0];
+            if (user && user.username === data.username && user.email === data.email && user.uuid === data.uuid) {
+                _req.session.user = {
+                    uuid: data.uuid,
+                    username: data.username,
+                    email: data.email,
+                };
+
+                _res.cookie("sessionID", _req.sessionID);
+                _res.redirect('/home')
+            } else {_res.render('login', {result: null});};
+        } else {_res.render('login', {result: null});};
+    } else {
+        _res.render('login', {result: null});
+    };
 });
 
 app.post('/login', express.urlencoded({extended: true}), async function login(_req, _res) {
@@ -91,43 +117,45 @@ app.post('/login', express.urlencoded({extended: true}), async function login(_r
 });
 
 
+
 app.get('/signup', async function signup_page(_req, _res) {
-    const cookies = new cookiesAuth(_req, _res, ['JWT', 'WsessionID']);
-    const tokens = await cookies.cookiesObj();
-    const auth = await cookies.cookiesAuth(tokens);
-    if (!auth) {
-        _res.send('cookies not found');
-    } else {
-        _res.send('cookies found')
-    }
-    
-    // if (_req.cookies['JWT'] && _req.cookies['WsessionID']) {
-    //     // variables
-    //     const weeklySession = _req.cookies.WsessionID;
-
-    //     // classes
-    //     const jwt = new jwtAuthorization(_req, _res, 'gfg_jwt_secret_key', 'gfg_token_header_key');
-    //     const db = new dbOperations;
-
-    //     const verifyJWT = await jwt.verifyJWT()
-    //     const data = await jwt.decodeJWT();
-    //     if (verifyJWT && data && data.WsessionID === weeklySession) {
-    //         const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
-    //         const user = check_result.rows[0];
-    //         if (user && user.username === data.username && user.email === data.email && user.uuid === data.uuid) {
-    //             _req.session.user = {
-    //                 uuid: data.uuid,
-    //                 username: data.username,
-    //                 email: data.email,
-    //             };
-
-    //             _res.cookie("sessionID", _req.sessionID);
-    //             _res.redirect('/home')
-    //         } else {_res.render('signup', {result: null});};
-    //     } else {_res.render('signup', {result: null});};
-    // } else {
+    // const cookies = new cookiesAuth(_req, _res, ['JWT', 'WsessionID'], 'gfg_jwt_secret_key', 'gfg_token_header_key');
+    // const tokens = await cookies.cookiesObj();
+    // const auth = await cookies.cookiesAuth(tokens, ['0/1/2/1', 'data/username/...']);
+    // if (!auth) {
     //     _res.render('signup', {result: null});
-    // };
+    // } else {
+    //     _res.send(`cookies found ${auth}`)
+
+    // }
+    
+    if (_req.cookies['JWT'] && _req.cookies['WsessionID']) {
+        // variables
+        const weeklySession = _req.cookies.WsessionID;
+
+        // classes
+        const jwt = new jwtAuthorization(_req, _res, 'gfg_jwt_secret_key', 'gfg_token_header_key');
+        const db = new dbOperations;
+
+        const verifyJWT = await jwt.verifyJWT()
+        const data = await jwt.decodeJWT();
+        if (verifyJWT && data && data.WsessionID === weeklySession) {
+            const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
+            const user = check_result.rows[0];
+            if (user && user.username === data.username && user.email === data.email && user.uuid === data.uuid) {
+                _req.session.user = {
+                    uuid: data.uuid,
+                    username: data.username,
+                    email: data.email,
+                };
+
+                _res.cookie("sessionID", _req.sessionID);
+                _res.redirect('/home')
+            } else {_res.render('signup', {result: null});};
+        } else {_res.render('signup', {result: null});};
+    } else {
+        _res.render('signup', {result: null});
+    };
 
 
 });
@@ -177,12 +205,20 @@ app.post('/signup', async function signup(_req, _res) {
         };
 
         // jwt data
-        const user_data= {
+        // const user_data= {
+        //     data:{
+        //         username: body.name,
+        //         email: body.email,
+        //         uuid: uuid,
+        //     },
+        //     WsessionData: {WsessionID: _req.sessionID},
+        // }; 
+        const user_data = {
             username: body.name,
             email: body.email,
             uuid: uuid,
-            WsessionID: _req.sessionID,
-        }; 
+            WsessionID: _req.sessionID
+        }
 
         if (!(_req.cookies.WsessionID)) {
             _res.cookie("WsessionID", _req.sessionID, { maxAge: 7 * 24 * 60 * 60 * 1000 });
