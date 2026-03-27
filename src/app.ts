@@ -53,7 +53,9 @@ app.get('/login', async function login_page(_req, _res) {
         const db = new dbOperations;
 
         const verifyJWT = await jwt.verifyJWT()
-        const data = await jwt.decodeJWT();
+        const JWT = await jwt.decodeJWT();
+        const JWTstring = JSON.stringify(JWT);
+        const data = JSON.parse(JWTstring);
         if (verifyJWT && data && data.WsessionID === weeklySession) {
             const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
             const user = check_result.rows[0];
@@ -83,7 +85,7 @@ app.post('/login', express.urlencoded({extended: true}), async function login(_r
     const login = new login_Check(_req, _res, body);
     const db = new dbOperations;
     const pwd = new passHash;
-    //const jwt = new jwtAuthorization(_req, _res)
+    const jwt = new jwtAuthorization(_req, _res, 'gfg_jwt_secret_key', 'gfg_token_header_key')
 
     //db operation
     const result = await db.getByValue<user_db_schema> ('users', ['email'], body.email);
@@ -106,7 +108,20 @@ app.post('/login', express.urlencoded({extended: true}), async function login(_r
                 username: user.username,
                 email: user.email,
             };
+
+            const user_data = {
+                username: user.name,
+                email: user.email,
+                uuid: user.uuid,
+                WsessionID: _req.sessionID
+            };
+
+
+            if (!(_req.cookies.WsessionID)) {
+                _res.cookie("WsessionID", _req.sessionID, { maxAge: 7 * 24 * 60 * 60 * 1000 });
+            };
             _res.cookie("sessionID", _req.sessionID);
+            jwt.signJWT(user_data, 7 * 24);
 
             // redirect to home 
             return _res.send({url: "/home"});
@@ -138,7 +153,9 @@ app.get('/signup', async function signup_page(_req, _res) {
         const db = new dbOperations;
 
         const verifyJWT = await jwt.verifyJWT()
-        const data = await jwt.decodeJWT();
+        const JWT = await jwt.decodeJWT();
+        const JWTstring = JSON.stringify(JWT);
+        const data = JSON.parse(JWTstring);
         if (verifyJWT && data && data.WsessionID === weeklySession) {
             const check_result = await db.getByValue<user_db_schema> ('users', ['email'], data.email);
             const user = check_result.rows[0];
@@ -218,7 +235,7 @@ app.post('/signup', async function signup(_req, _res) {
             email: body.email,
             uuid: uuid,
             WsessionID: _req.sessionID
-        }
+        };
 
         if (!(_req.cookies.WsessionID)) {
             _res.cookie("WsessionID", _req.sessionID, { maxAge: 7 * 24 * 60 * 60 * 1000 });
