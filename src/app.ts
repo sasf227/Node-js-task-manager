@@ -110,7 +110,7 @@ app.post('/login', express.urlencoded({extended: true}), async function login(_r
             };
 
             const user_data = {
-                username: user.name,
+                username: user.username,
                 email: user.email,
                 uuid: user.uuid,
                 WsessionID: _req.sessionID
