@@ -1,4 +1,4 @@
-import jwtAuthorization from "./jwt.ts";
+import jwtAuthorization from "./src/utils/jwt.ts";
 import dbOperations from "./db_operations.ts";
 import jwt from 'jsonwebtoken';
 

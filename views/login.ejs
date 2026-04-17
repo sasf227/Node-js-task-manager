@@ -33,7 +33,7 @@
         const password = document.getElementById('password').value;
         const error_handler = document.getElementById('error-handler');
 
-        const res = await fetch('/login', {
+        const res = await fetch('/auth/login', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -46,7 +46,7 @@
 
         const data = await res.json();
         if (data.url) {
-            window.location.href = data.url;
+            window.location.href = data.redirect;
         } else if(data.error) {
             error_handler.innerHTML=`${data.error}`;
         };
