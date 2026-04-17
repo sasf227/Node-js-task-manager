@@ -45,7 +45,7 @@
         });
 
         const data = await res.json();
-        if (data.url) {
+        if (data.redirect) {
             window.location.href = data.redirect;
         } else if(data.error) {
             error_handler.innerHTML=`${data.error}`;

@@ -25,13 +25,13 @@
 
 <a class="active">Home</a>
 <a>Chat</a>
-<a>Calendar</a>
+<a href="http://10.0.0.144:8082/dashboard.php">Calendar</a>
 <a>Notifications</a>
 <a>Settings</a>
 
 </nav>
 
-<button class="create-btn">+ New Task</button>
+<button class="create-btn" onclick="window.location.href = '/NewTask'">+ New Task</button>
 
 </aside>
 
@@ -45,9 +45,9 @@
 
 <div class="user-info">
 <h1>Good Morning 👋</h1>
-<p class="username"><%= uuid %></p>
-<p class="username"><%= username %></p>
-<p class="username"><%= email %></p>
+<p class="username"><%= user.uuid %></p>
+<p class="username"><%= user.username %></p>
+<p class="username"><%= user.email %></p>
 </div>
 
 <img class="avatar" src="https://i.pravatar.cc/80" alt="avatar">

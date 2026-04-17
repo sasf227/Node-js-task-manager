@@ -61,3 +61,31 @@ form input:focus {
     text-decoration: none;
     font-weight: 600;
 }
+
+textarea{
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #ddd;
+    margin:10px 0;
+    resize:vertical;
+    min-height:80px;
+    font-size:14px;
+}
+
+/* Labels */
+label{
+    text-align: left;
+    font-size:13px;
+    color:#555;
+    margin-top:10px;
+}
+
+/* Date group */
+.date-group{
+    display: flex;
+    gap:15px;
+}
+
+.date-group div{
+    display: grid;
+}

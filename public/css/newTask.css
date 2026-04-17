@@ -1,0 +1,134 @@
+/* Reset */
+
+:root{
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: sans-serif;
+}
+
+/* Background */
+body {
+background: #14141f;
+color: #ffffff;
+}
+
+/* Container */
+.task-container {
+max-width: 500px;
+margin: 60px auto;
+padding: 30px;
+background: #1e1e2f;
+border-radius: 14px;
+box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+/* Title */
+.task-container h2 {
+text-align: center;
+margin-bottom: 25px;
+font-weight: 600;
+}
+
+/* Form */
+.task-form {
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+/* Labels */
+.task-form label {
+font-size: 14px;
+color: #bcbccf;
+}
+
+/* Inputs */
+.task-form input,
+.task-form textarea,
+.task-form select {
+padding: 10px;
+border-radius: 8px;
+border: none;
+background: #2c2c3e;
+color: #fff;
+font-size: 14px;
+}
+
+/* Focus */
+.task-form input,
+.task-form textarea,
+.task-form select {
+outline: 2px solid #6c63ff;
+}
+
+/* Select multiple */
+select[multiple] {
+height: 100px;
+}
+
+/* Milestones container */
+#milestones-container {
+display: flex;
+flex-direction: column;
+gap: 10px;
+}
+
+/* Milestone item */
+.milestone-item {
+display: flex;
+gap: 10px;
+}
+
+/* Milestone input */
+.milestone-item input {
+flex: 1;
+}
+
+/* Remove button */
+.milestone-item button {
+background: #ff5c5c;
+border: none;
+border-radius: 6px;
+color: white;
+cursor: pointer;
+padding: 5px 10px;
+transition: 0.2s;
+}
+
+.milestone-item button {
+background: #e04444;
+}
+
+/* Add milestone button */
+.task-form button[type="button"] {
+background: transparent;
+border: 1px dashed #6c63ff;
+color: #6c63ff;
+padding: 10px;
+border-radius: 8px;
+cursor: pointer;
+transition: 0.2s;
+}
+
+.task-form button[type="button"] {
+background: #6c63ff;
+color: white;
+}
+
+/* Submit button */
+.task-form button[type="submit"] {
+margin-top: 10px;
+background: #6c63ff;
+border: none;
+padding: 12px;
+border-radius: 8px;
+color: white;
+font-size: 15px;
+cursor: pointer;
+transition: 0.2s;
+}
+
+.task-form button[type="submit"] {
+background: #5848d6;
+}

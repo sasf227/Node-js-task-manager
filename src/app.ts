@@ -12,22 +12,26 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/auth', authRoutes)
+app.use('/auth', authRoutes);
 
 app.get('/', authMiddleware, (req, res) => {
     res.render('welcome')
-})
+});
 
 app.get('/login', authMiddleware, (req, res) => {
     res.render('login')
-})
+});
 
 app.get('/signup', authMiddleware, (req, res) => {
     res.render('signup')
-})
+});
 
 app.get('/home', homeAuthMiddleware, (req, res) => {
     res.render('home', {user: req.user })
+});
+
+app.get('/NewTask', homeAuthMiddleware, (req, res) => {
+    res.render('newTask', {user: req.user })
 })
 
 app.listen(3000);

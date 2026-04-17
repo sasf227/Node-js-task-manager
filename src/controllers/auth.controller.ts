@@ -8,7 +8,8 @@ export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
         res.cookie("JWT", result.token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict'
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         });
 
         res.send({redirect: "/home"});
@@ -29,7 +30,8 @@ export const signup = async (req: Request<{}, {}, SignupBody>, res: Response) =>
         res.cookie("JWT", result.token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict'
+            sameSite: 'strict',
+            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
         });
 
         res.send({redirect: "/home"});

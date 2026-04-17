@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<title>Create Task</title>
+
+<link rel="stylesheet" href="/css/reset.css">
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/forms.css">
+
+</head>
+<body>
+
+<div class="form-container">
+
+<div class="form-card">
+
+<h2>Create New Task</h2>
+
+<form>
+
+<!-- Title -->
+<label>Task Title</label>
+<input type="text" name="title" placeholder="Enter task title" required>
+
+<!-- Description -->
+<label>Description</label>
+<textarea name="description" placeholder="Describe the task"></textarea>
+
+<!-- Creator
+<label>Creator</label>
+<input type="text" name="creator" placeholder="Your name">
+
+Creator Email 
+<label>Creator Email</label>
+<input type="email" name="creatorEmail" placeholder="Your email"> -->
+
+<!-- Team Members -->
+<label>Assign Users</label>
+<input type="text" name="users" placeholder="Enter emails (comma separated)">
+
+<!-- Milestones -->
+<label>Milestones</label>
+<textarea name="milestones" placeholder="Define milestones (e.g. Step 1, Step 2...)"></textarea>
+
+<!-- Dates -->
+<div class="date-group">
+<!-- 
+<div>
+<label>Created At</label>
+<input type="date" name="createdAt">
+</div> -->
+
+<div>
+<label>Due To</label>
+<input type="date" name="dueTo">
+</div>
+
+</div>
+
+<!-- Submit -->
+<button class="btn primary full">Create Task</button>
+
+</form>
+
+<p class="switch-text">
+<a href="/home">Back to Dashboard</a>
+</p>
+
+</div>
+
+</div>
+<script>
+    async function CreateTask () {
+        creator = `<%= user.username %>`;
+        users = [document.getElementById('users').value];
+        title = document.getElementById('title');
+        description = document.getElementById('description');
+        createdAt = new Date.now();
+        dueTo = document.getElementById('dueTo');
+        milestones = document.getElementById('milestones');
+        creatorEmail = `<%= user.email %>`
+
+        const res = fetch('/newTask', {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                creator,
+                users,
+                title,
+                description,
+                createdAt,
+                dueTo,
+                milestones,
+                creatorEmail
+            })
+        })
+    }
+</script>
+</body>
+</html>
