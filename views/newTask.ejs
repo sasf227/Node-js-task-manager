@@ -20,6 +20,8 @@
 
 <form>
 
+
+
 <!-- Title -->
 <label>Task Title</label>
 <input type="text" id="title" name="title" placeholder="Enter task title" required>
@@ -46,6 +48,21 @@
 
 </div>
 
+<!-- Priority -->
+<div class="priority-select">
+    <label>Priority</label>
+
+    <div class="priority-options">
+        <input type="radio" id="low" name="priority" value="Low">
+        <label for="low" class="priority low">Low</label>
+
+        <input type="radio" id="medium" name="priority" value="Medium">
+        <label for="medium" class="priority medium">Medium</label>
+
+        <input type="radio" id="high" name="priority" value="High">
+        <label for="high" class="priority high">High</label>
+    </div>
+</div>
 </form>
 
 <button class="btn primary full" onclick="createTask()">Create Task</button>
@@ -58,9 +75,9 @@
 </div>
 
 <script>
+
     async function createTask () {
         event.preventDefault()
-
         const creator = `<%= user.username %>`;
         const users = [document.getElementById('users').value];
         const title = document.getElementById('title').value;
@@ -69,6 +86,8 @@
         const dueto = document.getElementById('dueto').value;
         const milestones = [document.getElementById('milestones').value];
         const creatoremail = `<%= user.email %>`
+        const priority = document.querySelector('input[name="priority"]:checked').value;
+        const status = 'In Progress';
 
         const res = await fetch('/create/newTask', {
             method: "POST",
@@ -83,7 +102,9 @@
                 createdat,
                 dueto,
                 milestones,
-                creatoremail
+                creatoremail,
+                priority,
+                status
             })
         });
         const data = await res.json();

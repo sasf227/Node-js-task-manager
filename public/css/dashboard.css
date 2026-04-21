@@ -135,11 +135,9 @@ box-shadow:0 10px 20px rgba(0,0,0,0.05);
 }
 
 .task-header{
-
 display:flex;
 justify-content:space-between;
 margin-bottom:10px;
-
 }
 
 .priority{
@@ -150,14 +148,23 @@ font-size:12px;
 
 }
 
-.priority.high{
-background:#ffe3e3;
-color:#e03131;
+
+.priority.Low{
+background:#b1f3d4;
+color:#1cc88a;
+height: 20px;
 }
 
-.priority.medium{
+.priority.High{
+background:#ffe3e3;
+color:#e03131;
+height: 20px;
+}
+
+.priority.Medium{
 background:#fff3bf;
 color:#f08c00;
+height: 20px;
 }
 
 .task-footer{

@@ -4,9 +4,9 @@ import { getUserByEmail } from "./user.service.ts"
 import type { Tasks } from '../models/tasks.model.ts';
 
 export const createTask = async (body: TaskBody, jwtToken: string): Promise<Tasks> => {
-    if (!body.title || !body.dueto){
+    if (!body.title || !body.dueto || !body.priority){
         throw new Error("Complete missing fields")
-    } else if (!body.creator || !body.createdat || !body.creatoremail) {
+    } else if (!body.creator || !body.createdat || !body.creatoremail || !body.status) {
         throw new Error("Unknown error, try again later or contact a customer service")
     }
     const user = getUserByEmail(body.creatoremail);
@@ -22,6 +22,6 @@ export const createTask = async (body: TaskBody, jwtToken: string): Promise<Task
         throw new Error ("Unauthorized user, login or try again later");
     };
 
-    const create: Tasks = await insertIntoTask(body.creator, body.users, body.title, body.description, body.createdat, body.dueto, body.milestones, body.creatoremail);
+    const create: Tasks = await insertIntoTask(body.creator, body.users, body.title, body.description, body.createdat, body.dueto, body.milestones, body.creatoremail, body.priority, body.status);
     return create;
 }

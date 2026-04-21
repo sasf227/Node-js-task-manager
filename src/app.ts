@@ -2,7 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.ts';
 import createRoutes from './routes/taskCreate.routes.ts';
-import { authMiddleware, homeAuthMiddleware } from './middleware/auth.middleware.ts';
+import { authMiddleware, homeAuthMiddleware, createMiddleware } from './middleware/auth.middleware.ts';
 import dotenv from 'dotenv';
 
 
@@ -29,10 +29,10 @@ app.get('/signup', authMiddleware, (req, res) => {
 });
 
 app.get('/home', homeAuthMiddleware, (req, res) => {
-    res.render('home', {user: req.user })
+    res.render('home', {user: req.user, tasks: req.tasks})
 });
 
-app.get('/newTask', homeAuthMiddleware, (req, res) => {
+app.get('/newTask', createMiddleware, (req, res) => {
     res.render('newTask', {user: req.user })
 })
 

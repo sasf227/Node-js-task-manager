@@ -7,4 +7,6 @@ export type Tasks = {
     dueto: string;
     milestones: Array<string>;
     creatoremail: string;
+    priority: string;
+    status: string;
 }

@@ -4,3 +4,11 @@ export type User = {
     password: string; 
     uuid: string
 }
+
+export type UserToken = {
+    uuid: string;
+    email: string;
+    username: string;
+    iat: number;
+    exp: number;
+}

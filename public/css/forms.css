@@ -89,3 +89,73 @@ label{
 .date-group div{
     display: grid;
 }
+
+
+/* Priority */
+.priority-select{
+text-align:left;
+margin-bottom: 15px;
+}
+
+.priority-options{
+display:flex;
+gap:10px;
+}
+
+/* Hide radio buttons */
+.priority-options input{
+display:none;
+}
+
+/* Base style */
+.priority{
+
+padding:10px 16px;
+border-radius:20px;
+
+font-size:14px;
+font-weight:600;
+
+cursor:pointer;
+
+border:2px solid transparent;
+
+transition:0.3s;
+
+}
+
+/* Default (unselected) */
+.priority.low{
+background:#e6f9f0;
+color:#1cc88a;
+}
+
+.priority.medium{
+background:#fff8e1;
+color:#f0a500
+}
+
+.priority.high{
+background:#ffe6e6;
+color:#e03131;
+}
+
+/* SELECTED STATES */
+
+#low:checked + .low{
+background:#1cc88a;
+color:white;
+box-shadow:0 0 10px rgba(28,200,138,0.5);
+}
+
+#medium:checked + .medium{
+background:#f0a500;
+color:white;
+box-shadow:0 0 10px rgba(240,165,0,0.5);
+}
+
+#high:checked + .high{
+background:#e03131;
+color:white;
+box-shadow:0 0 10px rgba(224,49,49,0.5);
+}

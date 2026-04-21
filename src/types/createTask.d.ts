@@ -7,4 +7,6 @@ type TaskBody = {
     dueto: string;
     milestones?: Array<string>;
     creatoremail: string;
+    priority: string;
+    status: string;
 }
