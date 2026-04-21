@@ -1,160 +1,268 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <title>TaskFlow Dashboard</title>
 
-<meta charset="UTF-8">
-<title>TaskFlow Dashboard</title>
-
-<link rel="stylesheet" href="/css/reset.css">
-<link rel="stylesheet" href="/css/layout.css">
-<link rel="stylesheet" href="/css/dashboard.css">
-
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 
 <body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="logo">TaskFlow</h2>
+            <nav>
+                <a class="active">Home</a>
+                <a>Chat</a>
+                <a href="http://10.0.0.144:8082/dashboard.php">Calendar</a>
+                <a>Notifications</a>
+                <a>Settings</a>
+            </nav>
 
-<div class="app">
+            <button class="create-btn" onclick="window.location.href = '/NewTask'">+ New Task</button>
+        </aside>
 
-<!-- Sidebar -->
-
-<aside class="sidebar">
-
-<h2 class="logo">TaskFlow</h2>
-
-<nav>
-
-<a class="active">Home</a>
-<a>Chat</a>
-<a href="http://10.0.0.144:8082/dashboard.php">Calendar</a>
-<a>Notifications</a>
-<a>Settings</a>
-
-</nav>
-
-<button class="create-btn" onclick="window.location.href = '/NewTask'">+ New Task</button>
-
-</aside>
-
-<!-- Main Content -->
-
-<main class="main">
-
-<header class="topbar">
-
-<div class="user-area">
-
-<div class="user-info">
-<h1>Good Morning 👋</h1>
-<p class="username"><%= user.uuid %></p>
-<p class="username"><%= user.username %></p>
-<p class="username"><%= user.email %></p>
-</div>
-
-<img class="avatar" src="https://i.pravatar.cc/80" alt="avatar">
-
-</div>
-
-<div class="task-controls">
-
-<input class="search" placeholder="Search task">
-
-<select class="sort">
-<option>Sort by date</option>
-<option>Sort by priority</option>
-<option>Sort by progress</option>
-</select>
-
-</div>
-
-</header>
-
-<!-- Stats -->
-
-<section class="stats">
-
-<div class="stat-card">
-<% let i2 = tasks.length %>
-
-<h3><%= i2 %></h3>
-<p>Total Tasks</p>
-</div>
-
-<div class="stat-card">
-<% let i = 0 %>
-<% for (const key in tasks) {%>
-    <% const task = tasks[key].status%>
-    <% if (task === 'In Progress'){ %>
-        <% i++ %>
-    <% } %>
-<% } %>
-<h3><%= i %></h3>
-
-
-<p>In Progress</p>
-</div>
-
-<div class="stat-card">
-<% let i1 = 0 %>
-<% for (const key in tasks) {%>
-    <% const task = tasks[key].status%>
-    <% if (task === 'Completed'){ %>
-        <% i1++ %>
-    <% } %>
-<% } %>
-<h3><%= i1 %></h3>
-<p>Completed</p>
-</div>
-
-</section>
-
-
-<!-- Tasks -->
-
-<section class="tasks">
-
-<h2>Today</h2>
-<p class="section-desc">Due today</p>
-
-<div class="task-grid" id="todayTasks"></div>
-
-
-<h2>Week</h2>
-<p class="section-desc">Due this week</p>
-<% tasks.forEach(function(task) { %>
-    <div class="task-grid" id="weekTasks">
-        <div class="task-card">
-            <div class="task-header">
-                <h3><%= task.title %></h3>
-                <span class="priority <%= task.priority %>"><%= task.priority %></span>
-            </div>
-
-            <p><%= task.description %></p>
-
-            <div class="progress">
-                <div class="progress-bar" style="width:0%"></div>
-            </div>
-
-            <div class="task-footer">
-                <span>Due: <%= task.dueto %></span>
-                <div class="team">
-                    <img src="https://i.pravatar.cc/30?img=1">
-                    <img src="https://i.pravatar.cc/30?img=2">
+        <!-- Main Content -->
+        <main class="main">
+            <header class="topbar">
+                <div class="user-area">
+                    <div class="user-info">
+                        <h1>Good Morning 👋</h1>
+                        <p class="username"><%= user.uuid %></p>
+                        <p class="username"><%= user.username %></p>
+                        <p class="username"><%= user.email %></p>
+                    </div>
+                    <img class="avatar" src="https://i.pravatar.cc/80" alt="avatar">
                 </div>
-            </div>
-        </div>
+
+                <div class="task-controls">
+                    <input class="search" placeholder="Search task">
+
+                    <select class="sort">
+                        <option>Sort by date</option>
+                        <option>Sort by priority</option>
+                        <option>Sort by progress</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Stats -->
+
+            <section class="stats">
+                <div class="stat-card">
+                    <% let i = tasks.length %>
+                    <h3><%= i %></h3>
+                    <p>Total Tasks</p>
+                </div>
+
+                <div class="stat-card">
+                    <% let i1 = 0 %>
+                    <% for (const key in tasks) {%>
+                        <% const task = tasks[key].status%>
+                        <% if (task === 'In Progress'){ %>
+                            <% i1++ %>
+                        <% } %>
+                    <% } %>
+                    <h3><%= i1 %></h3>
+                    <p>In Progress</p>
+                </div>
+
+                <div class="stat-card">
+                    <% let i2 = 0 %>
+                    <% for (const key in tasks) {%>
+                        <% const task = tasks[key].status%>
+                        <% if (task === 'Completed'){ %>
+                            <% i2++ %>
+                        <% } %>
+                    <% } %>
+                    <h3><%= i2 %></h3>
+                    <p>Completed</p>
+                </div>
+
+                <div class="stat-card">
+                    <% let i3 = 0 %>
+                    <% for (const key in tasks) {%>
+                        <% const task = tasks[key].status%>
+                        <% if (task === 'Incompleted'){ %>
+                            <% i3++ %>
+                        <% } %>
+                    <% } %>
+                    <h3><%= i3 %></h3>
+                    <p>Incompleted</p>
+                </div>
+            </section>
+
+
+            <!-- Tasks -->
+
+            <section class="tasks">
+                <h2>Today</h2>
+                <p class="section-desc" >Due today</p>
+                <div class="task-grid" id=todayTasks">
+                    <% tasks.forEach(function(task) { %>
+                        <% const datenow = new Date() %>
+                        <% const taskdate = new Date(task.dueto) %>
+                        <% const year = taskdate.getFullYear() - datenow.getFullYear() %>
+                        <% const month = taskdate.getMonth() - datenow.getMonth() %>
+                        <% const day = taskdate.getDate() - datenow.getDate()%>
+                        
+                        <% if (year === 0 &&
+                            month === 0 &&
+                            day === 0) { %>
+                        
+                            <div class="task-card">
+                                <div class="task-header">
+                                    <h3><%= task.title %></h3>
+                                    <span class="priority <%= task.priority %>"><%= task.priority %></span>
+                                </div>
+
+                                <p><%= task.description %></p>
+
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:0%"></div>
+                                </div>
+
+                                <div class="task-footer">
+                                    <span>Due: <%= task.dueto %></span>
+                                    <div class="team">
+                                        <img src="https://i.pravatar.cc/30?img=1">
+                                        <img src="https://i.pravatar.cc/30?img=2">
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% }); %>
+                </div>
+
+
+                <h2>Week</h2>
+                <p class="section-desc">Due this week</p>
+                <div class="task-grid" id="weekTasks">
+                    <% tasks.forEach(function(task) { %>
+                        <% const datenow = new Date() %>
+                        <% const taskdate = new Date(task.dueto) %>
+                        <% const year = taskdate.getFullYear() - datenow.getFullYear() %>
+                        <% const month = taskdate.getMonth() - datenow.getMonth() %>
+                        <% const day = taskdate.getDate() - datenow.getDate()%>
+
+                        <% if (year === 0 &&
+                            month === 0 &&
+                            day >= 1 &&
+                            day <= 7 ) { %>
+                            
+                            <div class="task-card">
+                                <div class="task-header">
+                                    <h3><%= task.title %></h3>
+                                    <span class="priority <%= task.priority %>"><%= task.priority %></span>
+                                </div>
+
+                                <p><%= task.description %></p>
+
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:0%"></div>
+                                </div>
+
+                                <div class="task-footer">
+                                    <span>Due: <%= task.dueto %></span>
+                                    <div class="team">
+                                        <img src="https://i.pravatar.cc/30?img=1">
+                                        <img src="https://i.pravatar.cc/30?img=2">
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% }); %>
+                </div>
+
+                <h2>Month</h2>
+                <p class="section-desc">Due this month</p>
+
+                <div class="task-grid" id="monthTasks">
+                    <% tasks.forEach(function(task) { %>
+                        <% const datenow = new Date() %>
+                        <% const taskdate = new Date(task.dueto) %>
+                        <% const year = taskdate.getFullYear() - datenow.getFullYear() %>
+                        <% const month = taskdate.getMonth() - datenow.getMonth() %>
+                        <% const day = taskdate.getDate() - datenow.getDate()%>
+
+                        <% if (year === 0 &&
+                            month === 0 &&
+                            day >= 8 ||
+                            year === 0 &&
+                            month === 1 &&
+                            day === 0) { %>
+                            
+                            <div class="task-card">
+                                <div class="task-header">
+                                    <h3><%= task.title %></h3>
+                                    <span class="priority <%= task.priority %>"><%= task.priority %></span>
+                                </div>
+
+                                <p><%= task.description %></p>
+
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:0%"></div>
+                                </div>
+
+                                <div class="task-footer">
+                                    <span>Due: <%= task.dueto %></span>
+                                    <div class="team">
+                                        <img src="https://i.pravatar.cc/30?img=1">
+                                        <img src="https://i.pravatar.cc/30?img=2">
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% }); %>
+                </div>
+
+
+                <h2>Year</h2>
+                <p class="section-desc">Due this year</p>
+
+                <div class="task-grid" id="yearTasks">
+                    <% tasks.forEach(function(task) { %>
+                        <% const datenow = new Date() %>
+                        <% const taskdate = new Date(task.dueto) %>
+                        <% const year = taskdate.getFullYear() - datenow.getFullYear() %>
+                        <% const month = taskdate.getMonth() - datenow.getMonth() %>
+                        <% const day = taskdate.getDate() - datenow.getDate()%>
+
+                        <% if (year >= 0 &&
+                            month >= 1) { %>
+                            
+                            <div class="task-card">
+                                <div class="task-header">
+                                    <h3><%= task.title %></h3>
+                                    <span class="priority <%= task.priority %>"><%= task.priority %></span>
+                                </div>
+
+                                <p><%= task.description %></p>
+
+                                <div class="progress">
+                                    <div class="progress-bar" style="width:0%"></div>
+                                </div>
+
+                                <div class="task-footer">
+                                    <span>Due: <%= task.dueto %></span>
+                                    <div class="team">
+                                        <img src="https://i.pravatar.cc/30?img=1">
+                                        <img src="https://i.pravatar.cc/30?img=2">
+                                    </div>
+                                </div>
+                            </div>
+                        <% } %>
+                    <% }); %>
+                </div>
+            </section>
+        </main>
     </div>
-<% }); %>
 
-<h2>Month</h2>
-<p class="section-desc">Due this month</p>
-
-<div class="task-grid" id="monthTasks"></div>
-
-</section>
-
-</main>
-
-</div>
-
+    <script>
+       
+    </script>
 </body>
 </html>

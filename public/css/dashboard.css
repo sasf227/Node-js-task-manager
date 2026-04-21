@@ -81,8 +81,7 @@ align-items:center;
 padding:10px;
 border-radius:8px;
 border:1px solid #ddd;
-width:300px; 
-margin-right: 35px;
+width:320px; 
 
 }
 
@@ -119,7 +118,7 @@ margin-bottom:20px;
 display:grid;
 grid-template-columns:repeat(2,1fr);
 gap:20px;
-
+margin-bottom: 10px;
 }
 
 .task-card{
@@ -226,7 +225,7 @@ border-radius:50%;
 .task-controls{
 
 display:flex;
-gap:15px;
+gap: 200px;
 margin-bottom:40px;
 
 }
