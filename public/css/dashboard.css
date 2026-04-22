@@ -108,9 +108,11 @@ box-shadow:0 10px 20px rgba(0,0,0,0.05);
 }
 
 /* Tasks */
-
+.task-section-grid {
+    margin-top: 20px;
+}
 .tasks h2{
-margin-bottom:20px;
+margin-bottom: 5px;
 }
 
 .task-grid{
