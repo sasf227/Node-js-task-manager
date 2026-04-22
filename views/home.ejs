@@ -195,11 +195,12 @@
                             <% const day = taskdate.getDate() - datenow.getDate()%>
                             <% const dueM = ["January","February","March","April","May","June","July","August","September","October","November","December"] %>
                             <% if (year === 0 &&
-                                month === 0 &&
-                                day >= 8 ||
-                                year === 0 &&
-                                month === 1 &&
-                                day === 0) { %>
+                                   month === 1 &&
+                                   day === 0 ||
+                                   year === 0 &&
+                                   month === 0 &&
+                                   day >= 8 &&
+                                   day <=31) { %>
                                 
                                 <div class="task-card">
                                     <div class="task-header">
@@ -270,7 +271,7 @@
     </div>
 
     <script>
-        //search the task
+        
         function taskText(){
             const g = document.querySelectorAll('.task-section-grid');
             g.forEach(grid => {

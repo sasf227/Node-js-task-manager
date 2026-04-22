@@ -1,4 +1,5 @@
 export type Tasks = {
+    id: number
     creator: string;
     users: Array<string>;
     title: string;

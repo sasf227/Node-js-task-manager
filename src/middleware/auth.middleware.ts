@@ -3,6 +3,7 @@ import type { UserToken } from "../models/user.model.ts";
 import { findTaskbyEmail } from "../services/task.service.ts";
 import { verifyToken } from "../utils/jwt.ts";
 import type { Request, Response, NextFunction } from "express";
+import { subDays, formatDistanceToNow} from "date-fns";
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.JWT;
@@ -16,8 +17,14 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
             return res.redirect('/login');
         }
         const tasks = await findTaskbyEmail(user.email);
+        const days:Array<Array<any>> = []
+        tasks.forEach(task => {
+            const dayType = formatDistanceToNow(task.dueto, { addSuffix: true});
+            days.push([task.id, dayType]);
+        });
+        
         req.tasks = tasks
-
+        req.dayType = days
         next();
     } catch {
         return res.redirect('/login');

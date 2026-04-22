@@ -29,7 +29,7 @@ app.get('/signup', authMiddleware, (req, res) => {
 });
 
 app.get('/home', homeAuthMiddleware, (req, res) => {
-    res.render('home', {user: req.user, tasks: req.tasks})
+    res.render('home', {user: req.user, tasks: req.tasks, dayType: req.dayType})
 });
 
 app.get('/newTask', createMiddleware, (req, res) => {
