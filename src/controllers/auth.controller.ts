@@ -23,9 +23,9 @@ export const login = async (req: Request<{}, {}, LoginBody>, res: Response) => {
     };
 };
 
-export const signup = async (req: Request<{}, {}, SignupBody>, res: Response) => {
+export const signIn = async (req: Request<{}, {}, SignupBody>, res: Response) => {
     try {
-        const result = await authService.signup(req.body);
+        const result = await authService.signIn(req.body);
 
         res.cookie("JWT", result.token, {
             httpOnly: true,

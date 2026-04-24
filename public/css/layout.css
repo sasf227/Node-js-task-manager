@@ -47,3 +47,79 @@ body {
     box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     text-align: center;
 }
+/* Wrapper */
+.nav-item{
+position:relative;
+}
+
+/* Dropdown hidden by default */
+.howto-dropdown{
+
+position:absolute;
+left:100%;
+top:0;
+
+background:white;
+
+min-width:200px;
+padding:10px;
+
+border-radius:10px;
+
+box-shadow:0 10px 20px rgba(0,0,0,0.1);
+
+display:none;
+
+flex-direction:column;
+gap:8px;
+
+}
+
+/* Links */
+.howto-dropdown a{
+
+text-decoration:none;
+color:#555;
+
+padding:8px 10px;
+border-radius:6px;
+
+transition:0.2s;
+
+}
+
+.howto-dropdown a:hover{
+background:#f0f4ff;
+color:#4e73df;
+}
+
+/* Show on hover */
+.howto:hover .howto-dropdown{
+display:flex;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+.app{
+display:flex;
+height:100vh;
+overflow: hidden;
+}
+
+.sidebar{
+width:240px;
+background:#ffffff;
+display:flex;
+flex-direction:column;
+padding:30px;
+box-shadow:2px 0 20px rgba(0,0,0,0.05);
+}
+.main{
+    flex: 1;
+    height: 100vh;
+    overflow-y: auto; /* enables scrolling */
+    padding: 40px;
+    background: #f5f7fb;
+}

@@ -1,9 +1,9 @@
 import type { JwtPayload } from "jsonwebtoken";
 import type { UserToken } from "../models/user.model.ts";
-import { findTaskbyEmail } from "../services/task.service.ts";
+import { findTaskbyEmail, updateTaskStatus } from "../services/task.service.ts";
 import { verifyToken } from "../utils/jwt.ts";
 import type { Request, Response, NextFunction } from "express";
-import { subDays, formatDistanceToNow} from "date-fns";
+import { isToday, formatDistanceToNow} from "date-fns";
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.JWT;
@@ -17,14 +17,22 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
             return res.redirect('/login');
         }
         const tasks = await findTaskbyEmail(user.email);
-        const days:Array<Array<any>> = []
+        const days:Array<Record<any, any>> = []
         tasks.forEach(task => {
             const dayType = formatDistanceToNow(task.dueto, { addSuffix: true});
-            days.push([task.id, dayType]);
+            const dayHour = ((Date.parse(task.dueto) / 1000 / 60 / 60 / 24) - (Date.now() / 1000 / 60 / 60 / 24));
+            const daysleft = dayHour.toFixed()
+            if (dayHour <= 0 && task.status === "In Progress") {
+                updateTaskStatus("Incomplete", task.id)
+            }
+            days.push({id: task.id, dayType, daysleft});
         });
         
         req.tasks = tasks
         req.dayType = days
+
+
+        
         next();
     } catch {
         return res.redirect('/login');

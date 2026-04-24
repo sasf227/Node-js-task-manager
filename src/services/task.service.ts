@@ -7,8 +7,13 @@ export const insertIntoTask = async (creator: string, users: Array<string> | und
     return result.rows[0];
 }
 
-export const findTaskbyEmail = async (creatoremail: string): Promise<Array<Tasks>>=> {
+export const findTaskbyEmail = async (creatoremail: string): Promise<Array<Tasks>> => {
     const result = await pool.query(`SELECT * FROM tasks WHERE creatoremail = $1`, [creatoremail]);
     return result.rows;
     
+}
+
+export const updateTaskStatus = async(status: string, id: number): Promise<Array<Tasks>> => {
+    const result = await pool.query(`UPDATE tasks SET status = $1 WHERE id = $2`, [status, id]);
+    return result.rows[0];
 }

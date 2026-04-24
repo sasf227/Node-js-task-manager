@@ -16,6 +16,11 @@ export const createUser = async (username: string, email: string, password: stri
     return result.rows[0];
 };
 
+export const insertImage = async(img: any) => {
+    const result = await pool.query(`INSERT INTO users (profpict) VALUES ($1) RETURNING *`, [img]);
+    return result.rows[0]
+}
+
 
 
     // NOT READY !!!!!!

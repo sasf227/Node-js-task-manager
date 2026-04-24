@@ -35,7 +35,7 @@
         const confirmPassword = document.getElementById('confirm_password').value;
         const error_handler = document.getElementById('error-handler');
 
-        const res = await fetch('/auth/signup', {
+        const res = await fetch('/auth/signIn', {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

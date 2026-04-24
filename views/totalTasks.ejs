@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TaskFlow Dashboard</title>
+
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+</head>
+
+<body>
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h2 class="logo">TaskFlow</h2>
+            <nav>
+                <a href="/home" class="active">Home</a>
+                <a>Chat</a>
+                <a href="http://10.0.0.144:8082/dashboard.php">Calendar</a>
+                <a>Notifications</a>
+                <a>Settings</a>
+                <a href="/howTo">How to</a>
+            </nav>
+
+            <button class="create-btn" onclick="window.location.href = '/NewTask'">+ New Task</button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main">
+            <header class="topbar">
+                <div class="user-area">
+                    <div class="user-info">
+                        <h1>Good Morning 👋</h1>
+                        <p class="username"><%= user.username %></p>
+                        <p class="username"><%= user.email %></p>
+                    </div>
+                    <img class="avatar" src="/img/avatar.png" alt="avatar">
+                </div>
+
+                <div class="task-controls">
+                    <input class="search" id="taskSearch" placeholder="Search task">
+
+                    <select id="sortSelect class="sort">
+                        <option value="date">Sort by Date</option>
+                        <option value="priority">Sort by Priority</option>
+                        <option value="progress">Sort by Progress</option>
+                        <option value="created">Sort by Creation</option>
+                    </select>
+                </div>
+            </header>
+
+            <!-- Stats -->
+            <section class="stats">
+                <div class="stat-card" data-filter="all" style="border: 2px solid #4e73df; background: rgba(0, 62, 250, 0.247); color: #4e73df; transform: scale(0.97);" onclick="window.location.href='/home/totalTasks'">
+                    <% let i = tasks.length %>
+                    <h3 style="color: #ffffff;"><%= i %></h3>
+                    <p style="opacity: 1;">Total Tasks</p>
+                </div>
+
+                <div class="stat-card" data-filter="progress" onclick="window.location.href='/home'">
+                    <% let i1 = 0 %>
+                    <% for (const key in tasks) {%>
+                        <% const task = tasks[key].status%>
+                        <% if (task === 'In Progress'){ %>
+                            <% i1++ %>
+                        <% } %>
+                    <% } %>
+                    <h3><%= i1 %></h3>
+                    <p>In Progress</p>
+                </div>
+
+                <div class="stat-card" data-filter="completed" onclick="window.location.href='/home/completedTasks'">
+                    <% let i2 = 0 %>
+                    <% for (const key in tasks) {%>
+                        <% const task = tasks[key].status%>
+                        <% if (task === 'Completed'){ %>
+                            <% i2++ %>
+                        <% } %>
+                    <% } %>
+                    <h3><%= i2 %></h3>
+                    <p>Completed</p>
+                </div>
+
+                
+                <div class="stat-card" data-filter="incompleted" onclick="window.location.href='/home/incompletedTasks'">
+                    <% let i3 = 0 %>
+                    <% for (const key in tasks) {%>
+                        <% const task = tasks[key].status%>
+                        <% if (task === 'Incompleted'){ %>
+                            <% i3++ %>
+                        <% } %>
+                    <% } %>
+                    <h3><%= i3 %></h3>
+                    <p>Incompleted</p>
+                </div>
+            </section>
+
+
+            <!-- Tasks -->
+
+            <section class="tasks">
+                <div class="task-section-grid">
+                    <h2 class="section-title">All tasks</h2>
+                    <div class="task-grid" id=todayTasks"> 
+                        <% tasks.forEach(function(task) { %>
+                            <% dayType.forEach(function(date) { %>
+                                <% if (date.id === task.id) { %>
+                                    <div class="task-card" data-due="<%= task.dueto %>" data-priority="<%= task.priority %>" data-progress="<%= task.progress || 0 %>"data-created="<%= task.createdAt %>">
+                                        <div class="task-header">
+                                            <h3 class="task-title"><%= task.title %></h3>
+                                            <span class="priority <%= task.priority %>"><%= task.priority %></span>
+                                        </div>
+
+                                        <p class="task-desc"><%= task.description %></p>
+
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width:0%"></div>
+                                        </div>
+
+                                        <div class="task-footer">
+                                            <span><%= date.dayType %></span>
+                                            <div class="team">
+                                                <img src="https://i.pravatar.cc/30?img=1">
+                                                <img src="https://i.pravatar.cc/30?img=2">
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% });%>
+                        <% }); %>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const searchInput = document.getElementById("taskSearch");
+
+        searchInput.addEventListener("input", function () {
+            const query = this.value.toLowerCase();
+            const tasks = document.querySelectorAll('.task-card');
+            tasks.forEach(task => {
+                const title = task.querySelector(".task-title").textContent.toLowerCase();
+                const desc = task.querySelector(".task-desc").textContent.toLowerCase();
+
+                if (title.includes(query) || desc.includes(query)) {
+                    task.style.display = "block";
+                } else {
+                    task.style.display = "none"
+                }
+            });
+        });
+    </script>
+    <script>
+        const sortSelect = document.getElementById("sortSelect")
+        sortSelect.addEventListener("change", sortTasks);
+
+        function sortTasks() {
+            const sortBy = sortSelect.value;
+            const sections = document.querySelectorAll(".task-grid");
+
+            sections.forEach(section => {
+                const tasks = Array.from(section.querySelectorAll(".task-card"));
+                tasks.sort((a, b) => {
+                    if (sortBy === "date") {
+                        return new Date(a.dataset.due) - new Date(b.dataset.due);
+                    }
+
+                    if (sortBy === "priority") {
+                        const order = { high: 3, medium: 2, low: 1 };
+                        return order[b.dataset.priority] - order[a.dataset.priority];
+                    }
+
+                    if (sortBy === "progress") {
+                        return b.dataset.progress - a.dataset.progress;
+                    }
+
+                    if (sortBy === "created") {
+                        return new Date(b.dataset.created) - new Date(a.dataset.created);
+                    }
+                });
+                tasks.forEach(task=>section.appendChild(task))
+            });
+        };
+
+        
+    </script>
+</body>
+</html>

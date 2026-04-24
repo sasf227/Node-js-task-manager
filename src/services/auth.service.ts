@@ -1,7 +1,9 @@
-import { createUser, getUserByEmail } from "./user.service.ts";
+import { createUser, getUserByEmail, insertImage } from "./user.service.ts";
 import { comparePassword, hashPassword } from '../utils/hash.ts';
 import { generateToken } from '../utils/jwt.ts';
 import { v4 } from "uuid";
+import multer from 'multer';
+import path from 'path';
 
 export const login = async (body: LoginBody): Promise<{token: string}> => {
     if (!body.email || !body.password) {
@@ -29,7 +31,7 @@ export const login = async (body: LoginBody): Promise<{token: string}> => {
     return { token }
 };
 
-export const signup = async (body: SignupBody): Promise<{token: string}> => {
+export const signIn = async (body: SignupBody): Promise<{token: string}> => {
     if (!body.username || !body.email || !body.password || !body.confirmPassword) {
         throw new Error("Complete missing fields");
     } else if (body.password !== body.confirmPassword) {
@@ -44,7 +46,10 @@ export const signup = async (body: SignupBody): Promise<{token: string}> => {
 
     const hash = await hashPassword(body.password);
 
-    const create = await createUser(body.username, body.email, hash, v4());
+    
+    
+    const create = await createUser(body.username, body.email, hash, v4(), );
+    
     if (!create) {
         throw new Error("User can't be created, try again later");
     };

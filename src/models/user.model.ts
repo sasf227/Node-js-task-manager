@@ -2,7 +2,8 @@ export type User = {
     username: string;
     email: string;
     password: string; 
-    uuid: string
+    uuid: string;
+    profpict: string;
 }
 
 export type UserToken = {
