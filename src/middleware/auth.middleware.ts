@@ -22,7 +22,7 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
             const dayType = formatDistanceToNow(task.dueto, { addSuffix: true});
             const dayHour = ((Date.parse(task.dueto) / 1000 / 60 / 60 / 24) - (Date.now() / 1000 / 60 / 60 / 24));
             const daysleft = dayHour.toFixed()
-            if (dayHour <= 0 && task.status === "In Progress") {
+            if (dayHour < 0 && task.status === "In Progress") {
                 updateTaskStatus("Incomplete", task.id)
             }
             days.push({id: task.id, dayType, daysleft});

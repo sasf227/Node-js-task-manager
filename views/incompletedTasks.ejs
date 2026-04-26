@@ -52,10 +52,10 @@
 
             <!-- Stats -->
             <section class="stats">
-                <div class="stat-card" data-filter="all" style="border: 2px solid #4e73df; background: rgba(0, 62, 250, 0.247); color: #4e73df; transform: scale(0.97);" onclick="window.location.href='/home/totalTasks'">
+                <div class="stat-card" data-filter="all"onclick="window.location.href='/home/totalTasks'">
                     <% let i = tasks.length %>
-                    <h3 style="color: #ffffff;"><%= i %></h3>
-                    <p style="opacity: 1;">Total Tasks</p>
+                    <h3><%= i %></h3>
+                    <p>Total Tasks</p>
                 </div>
 
                 <div class="stat-card" data-filter="progress" onclick="window.location.href='/home'">
@@ -83,7 +83,7 @@
                 </div>
 
                 
-                <div class="stat-card" data-filter="incompleted" onclick="window.location.href='/home/incompletedTasks'">
+                <div class="stat-card" data-filter="incompleted" style="border: 2px solid #4e73df; background: rgba(0, 62, 250, 0.247); color: #4e73df; transform: scale(0.97);" onclick="window.location.href='/home/incompletedTasks'">
                     <% let i3 = 0 %>
                     <% for (const key in tasks) {%>
                         <% const task = tasks[key].status%>
@@ -91,8 +91,8 @@
                             <% i3++ %>
                         <% } %>
                     <% } %>
-                    <h3><%= i3 %></h3>
-                    <p>Incompleted</p>
+                    <h3 style="color: #ffffff;"><%= i3 %></h3>
+                    <p style="opacity: 1;">Incompleted</p>
                 </div>
             </section>
 
@@ -101,11 +101,11 @@
 
             <section class="tasks">
                 <div class="task-section-grid">
-                    <h2 class="section-title">All tasks</h2>
+                    <h2 class="section-title">Incompleted tasks</h2>
                     <div class="task-grid" id=todayTasks"> 
                         <% tasks.forEach(function(task) { %>
                             <% dayType.forEach(function(date) { %>
-                                <% if (date.id === task.id) { %>
+                                <% if (date.id === task.id && task.status === "Incompleted") { %>
                                     <div class="task-card" data-due="<%= task.dueto %>" data-priority="<%= task.priority %>" data-progress="<%= task.progress || 0 %>"data-created="<%= task.createdAt %>">
                                         <div class="task-header">
                                             <h3 class="task-title"><%= task.title %></h3>
@@ -115,11 +115,7 @@
                                         <p class="task-desc"><%= task.description %></p>
 
                                         <div class="progress">
-                                            <% if (task.status === "Completed") {%>
-                                                <div class="progress-bar" style="width:100%"></div>
-                                            <% } else {%>
-                                                <div class="progress-bar" style="width:0%"></div>
-                                            <% } %>
+                                            <div class="progress-bar" style="width:0%"></div>
                                         </div>
 
                                         <div class="task-footer">
