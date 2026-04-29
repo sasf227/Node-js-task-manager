@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat - TaskFlow</title>
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/chat.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Sidebar (same as dashboard) -->
+        <aside class="sidebar">
+            <h2 class="logo">TaskFlow</h2>
+
+            <nav>
+                <a href="dashboard.html">Home</a>
+                <a class="active">Chat</a>
+                <a>Calendar</a>
+                <a>Notifications</a>
+                <a>Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Chat Layout -->
+        <main class="chat-main">
+            <!-- Chat List -->
+            <div class="chat-list">
+                <h3>Chats</h3>
+
+                <div class="chat-user active">
+                    <img src="https://i.pravatar.cc/40?img=1">
+                    <div>
+                        <p>John Doe</p>
+                        <!-- <span>Hey, did you finish?</span> -->
+                    </div>
+                </div>
+
+                <div class="chat-user">
+                    <img src="https://i.pravatar.cc/40?img=2">
+                    <div>
+                        <p>Anna</p>
+                        <!-- <span>Let's meet tomorrow</span> -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Window -->
+            <div class="chat-window">
+                <!-- Header -->
+                <div class="chat-header">
+                    <img src="https://i.pravatar.cc/40?img=1">
+                    <h3>John Doe</h3>
+                </div>
+
+                <!-- Messages -->
+                <div class="chat-messages">
+                    <!-- <div class="message other">
+                    <p>Hey, did you finish the task?</p>
+                    <span>10:30</span>
+                    </div>
+
+                    <div class="message me">
+                        <p>Almost done, just testing it</p>
+                        <span>10:32</span>
+                    </div>
+
+                    <div class="message other">
+                    <p>Nice 👍</p>
+                    <span>10:33</span>
+                    </div> -->
+                </div>
+                
+                <!-- Input -->
+                <form class="chat-input">
+                    <input type="text" class="input" autocomplete="off" autofocus placeholder="Type a message...">
+                    <button>Send</button>
+                </form>
+            </div>
+        </main>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+
+        const jwt = `<%= token %>`
+        console.log(user)
+        console.log(jwt)
+        const form = document.querySelector(".chat-input");
+        const input = document.querySelector(".input");
+        const messages = document.querySelector(".chat-messages");
+        const socket = io()
+        socket.emit("handshake", jwt)
+
+        form.addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            if (input.value) {
+                socket.emit("chat message", username, input.value)
+            }
+            
+            input.value = "";
+            return false;
+        }, false);
+
+
+        socket.on("chat message", function(username, msg) { 
+            addMessage(username + ": " + msg);
+        })
+
+        function addMessage(message) {
+            const messageMe = document.createElement("div");
+            messageMe.setAttribute("class", "message me")
+            messageMe.innerHTML = `
+                                    <p>${message}</p>
+                                    <span>${new Date().getHours()}:${new Date().getMinutes()}</span>
+                                    `;
+            messages.appendChild(messageMe);
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+    
+</body>
+</html>

@@ -4,6 +4,7 @@ import { findTaskbyEmail, updateTaskStatus } from "../services/task.service.ts";
 import { verifyToken } from "../utils/jwt.ts";
 import type { Request, Response, NextFunction } from "express";
 import { isToday, formatDistanceToNow} from "date-fns";
+import { hashPassword } from "../utils/hash.ts";
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.JWT;
@@ -12,7 +13,8 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
     try {
         const user = verifyToken(token);
         req.user = user;
-
+        // Cryptere const hashToken = await hashPassword(token)
+        req.token = token;
         if (typeof user === 'string' || !user || typeof (user as any).email !== 'string') {
             return res.redirect('/login');
         }
@@ -23,7 +25,7 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
             const dayHour = ((Date.parse(task.dueto) / 1000 / 60 / 60 / 24) - (Date.now() / 1000 / 60 / 60 / 24));
             const daysleft = dayHour.toFixed()
             if (dayHour < 0 && task.status === "In Progress") {
-                updateTaskStatus("Incomplete", task.id)
+                const updateTask = updateTaskStatus("Incompleted", task.id)
             }
             days.push({id: task.id, dayType, daysleft});
         });

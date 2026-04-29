@@ -61,8 +61,8 @@
                 <div class="stat-card" data-filter="progress" onclick="window.location.href='/home'">
                     <% let i1 = 0 %>
                     <% for (const key in tasks) {%>
-                        <% const task = tasks[key].status%>
-                        <% if (task === 'In Progress'){ %>
+                        <% const taskProg = tasks[key].status%>
+                        <% if (taskProg === 'In Progress'){ %>
                             <% i1++ %>
                         <% } %>
                     <% } %>
@@ -73,8 +73,8 @@
                 <div class="stat-card" data-filter="completed" onclick="window.location.href='/home/completedTasks'">
                     <% let i2 = 0 %>
                     <% for (const key in tasks) {%>
-                        <% const task = tasks[key].status%>
-                        <% if (task === 'Completed'){ %>
+                        <% const taskComp = tasks[key].status%>
+                        <% if (taskComp === 'Completed'){ %>
                             <% i2++ %>
                         <% } %>
                     <% } %>
@@ -86,8 +86,8 @@
                 <div class="stat-card" data-filter="incompleted" onclick="window.location.href='/home/incompletedTasks'">
                     <% let i3 = 0 %>
                     <% for (const key in tasks) {%>
-                        <% const task = tasks[key].status%>
-                        <% if (task === 'Incompleted'){ %>
+                        <% const taskIncomp = tasks[key].status%>
+                        <% if (taskIncomp === 'Incompleted'){ %>
                             <% i3++ %>
                         <% } %>
                     <% } %>
@@ -98,7 +98,6 @@
 
 
             <!-- Tasks -->
-
             <section class="tasks">
                 <div class="task-section-grid">
                     <h2 class="section-title">All tasks</h2>

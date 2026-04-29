@@ -52,7 +52,7 @@
 
             <!-- Stats -->
             <section class="stats">
-                <div class="stat-card" data-filter="all"onclick="window.location.href='/home/totalTasks'">
+                <div class="stat-card" data-filter="all" onclick="window.location.href='/home/totalTasks'">
                     <% let i = tasks.length %>
                     <h3><%= i %></h3>
                     <p>Total Tasks</p>
@@ -61,8 +61,8 @@
                 <div class="stat-card" data-filter="progress" onclick="window.location.href='/home'">
                     <% let i1 = 0 %>
                     <% for (const key in tasks) {%>
-                        <% const task = tasks[key].status%>
-                        <% if (task === 'In Progress'){ %>
+                        <% const taskProg = tasks[key].status%>
+                        <% if (taskProg === 'In Progress'){ %>
                             <% i1++ %>
                         <% } %>
                     <% } %>
@@ -70,11 +70,11 @@
                     <p>In Progress</p>
                 </div>
 
-                <div class="stat-card" data-filter="completed"  style="border: 2px solid #4e73df; background: rgba(0, 62, 250, 0.247); color: #4e73df; transform: scale(0.97);" onclick="window.location.href='/home/completedTasks'">
+                <div class="stat-card" data-filter="completed" style="border: 2px solid #4e73df; background: rgba(0, 62, 250, 0.247); color: #4e73df; transform: scale(0.97);" onclick="window.location.href='/home/completedTasks'">
                     <% let i2 = 0 %>
                     <% for (const key in tasks) {%>
-                        <% const task = tasks[key].status%>
-                        <% if (task === 'Completed'){ %>
+                        <% const taskComp = tasks[key].status%>
+                        <% if (taskComp === 'Completed'){ %>
                             <% i2++ %>
                         <% } %>
                     <% } %>
@@ -86,8 +86,8 @@
                 <div class="stat-card" data-filter="incompleted" onclick="window.location.href='/home/incompletedTasks'">
                     <% let i3 = 0 %>
                     <% for (const key in tasks) {%>
-                        <% const task = tasks[key].status%>
-                        <% if (task === 'Incompleted'){ %>
+                        <% const taskIncomp = tasks[key].status%>
+                        <% if (taskIncomp === 'Incompleted'){ %>
                             <% i3++ %>
                         <% } %>
                     <% } %>

@@ -6,6 +6,7 @@ declare module 'express-serve-static-core' {
         user?: any;
         tasks?: any;
         dayType?: Array<Record<any, any>>;
+        token?: any;
     };
 }
 
