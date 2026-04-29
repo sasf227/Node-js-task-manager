@@ -8,6 +8,8 @@ import * as http from 'http';
 import { Server } from 'socket.io';
 import { comparePassword } from './utils/hash.ts';
 import { verifyToken } from './utils/jwt.ts';
+import { getUserByEmail } from './services/user.service.ts';
+import type { User } from './models/user.model.ts';
 
 
 
@@ -54,18 +56,20 @@ app.get('/home/incompletedTasks', homeAuthMiddleware, (req, res) => {
 });
 
 app.get('/chat', homeAuthMiddleware, (req, res) => {
-    res.render('chat', {token: req.token})
+    res.render('chat', {token: req.token, user: req.user})
 })
 
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
     console.log('A user connected');
 
-    socket.on('handshake', (jwt: string) => {
-        if (!jwt) return;
+    socket.on('handshake', async (jwt: string) => {
         try {
             const user = verifyToken(jwt)
-            if (typeof user === 'string' || !user || typeof (user as any).email !== 'string') {
-                return res.redirect('/login');
+            console.log(user)
+            const verifyUser = await getUserByEmail(user.email)
+            console.log(verifyUser)
+            if (user.uuid === verifyUser.uuid && user.username === verifyUser.username && user.email === verifyUser.email) {
+                io.emit('chat message', 'Server', 'User ' + user.username + ' allowed')
             }
         } catch (error) {
             
@@ -75,9 +79,16 @@ io.on('connection', (socket) => {
         console.log('User disconnected');
     });
 
-    socket.on('chat message', (username, msg) => {
-        console.log('message: ' + msg);
-        io.emit('chat message', username, msg); // Broadcast the message to all connected clients
+    socket.on('new chat', (emailto, emailfrom) =>{
+        console.log(emailto + ", " + emailfrom);
+        const newChatSocket = emailto + emailfrom 
+        socket.join('123')
+        io.to('123').emit('chat message', emailfrom, 'got texted to ' + emailto)
+    })
+
+    socket.on('chat message', (username, emailto, msg, ioID) => {
+        console.log(username +": " + msg);
+        io.to('123').emit('chat message', username, msg); // Broadcast the message to all connected clients
     });
 });
 
