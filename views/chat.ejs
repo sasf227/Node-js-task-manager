@@ -98,35 +98,43 @@
         const socket = io()
         socket.emit("handshake", jwt)
         function newChat() {
-            socket.emit("new chat", newChatInput.value, `<%= user.email %>`)
+            const email = newChatInput.value;
+            socket.emit("new chat", email);
         }
         
 
         form.addEventListener("submit", function(event) {
             event.preventDefault();
 
-            if (input.value) {
-                socket.emit("chat message", `<%= user.username %>`, newChatInput.value, input.value, newChatInput.value + `<%= user.email %>`)
+            if (input.value && newChatInput.value) {
+                socket.emit("chat message", newChatInput.value, input.value);
             }
-            
+
             input.value = "";
-            return false;
-        }, false);
+        });
 
 
-        socket.on("chat message", function(username, msg) { 
-            addMessage(username + ": " + msg);
-        })
+        socket.on("chat message", function(data) {
+            const currentUser = "<%= user.email %>";
 
-        function addMessage(message) {
-            const messageMe = document.createElement("div");
-            messageMe.setAttribute("class", "message me")
-            messageMe.innerHTML = `
-                                    <p>${message}</p>
-                                    <span>${new Date().getHours()}:${new Date().getMinutes()}</span>
-                                    `;
-            messages.appendChild(messageMe);
-            window.scrollTo(0, document.body.scrollHeight);
+            const type = data.email === currentUser ? "me" : "other";
+
+            addMessage(data.sender, data.message, type);
+        });
+
+        function addMessage(username, message, type) {
+            const div = document.createElement("div");
+            div.className = "message " + type;
+
+            div.innerHTML = `
+                <p>${username}: ${message}</p>
+                <span>${new Date().getHours()}:${new Date().getMinutes()}</span>
+            `;
+
+            messages.appendChild(div);
+
+            // scroll inside chat
+            messages.scrollTop = messages.scrollHeight;
         }
     </script>
     

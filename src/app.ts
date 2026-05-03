@@ -9,7 +9,8 @@ import { Server } from 'socket.io';
 import { comparePassword } from './utils/hash.ts';
 import { verifyToken } from './utils/jwt.ts';
 import { getUserByEmail } from './services/user.service.ts';
-import type { User } from './models/user.model.ts';
+import type { User, UserToken } from './models/user.model.ts';
+import type { JwtPayload } from 'jsonwebtoken';
 
 
 
@@ -59,39 +60,61 @@ app.get('/chat', homeAuthMiddleware, (req, res) => {
     res.render('chat', {token: req.token, user: req.user})
 })
 
-io.on('connection', async (socket) => {
-    console.log('A user connected');
+io.on('connection', (socket) => {
+    console.log('User connected');
+
+    function getRoom(email1: string, email2: string) {
+        return [email1, email2].sort().join("_");
+    }
 
     socket.on('handshake', async (jwt: string) => {
         try {
-            const user = verifyToken(jwt)
-            console.log(user)
-            const verifyUser = await getUserByEmail(user.email)
-            console.log(verifyUser)
-            if (user.uuid === verifyUser.uuid && user.username === verifyUser.username && user.email === verifyUser.email) {
-                io.emit('chat message', 'Server', 'User ' + user.username + ' allowed')
-            }
-        } catch (error) {
+            const user: UserToken | JwtPayload | string  = verifyToken(jwt);
+            if (typeof user === 'string') return socket.disconnect()
             
+            const dbUser = await getUserByEmail(user.email);
+
+            if (!dbUser) return socket.disconnect();
+
+            // ✅ store user on socket
+            socket.data.user = dbUser;
+
+            console.log('Authenticated:', dbUser.email);
+
+        } catch (err) {
+            socket.disconnect();
         }
-    })
-    socket.on('disconnect', () => {
-        console.log('User disconnected');
     });
 
-    socket.on('new chat', (emailto, emailfrom) =>{
-        console.log(emailto + ", " + emailfrom);
-        const newChatSocket = emailto + emailfrom 
-        socket.join('123')
-        io.to('123').emit('chat message', emailfrom, 'got texted to ' + emailto)
-    })
+    socket.on('new chat', async (emailTo: string) => {
+        const user = socket.data.user;
+        if (!user) return;
 
-    socket.on('chat message', (username, emailto, msg, ioID) => {
-        console.log(username +": " + msg);
-        io.to('123').emit('chat message', username, msg); // Broadcast the message to all connected clients
+        const room = getRoom(user.email, emailTo);
+
+        socket.join(room);
+
+        console.log(`${user.email} joined ${room}`);
+
+        // optional: notify user
+        socket.emit('chat message', 'System', `Chat opened with ${emailTo}`);
+    });
+
+    socket.on('chat message', (emailTo: string, msg: string) => {
+        const user = socket.data.user;
+        if (!user) return;
+
+        const room = getRoom(user.email, emailTo);
+
+        io.to(room).emit('chat message', {
+            sender: user.username,
+            email: user.email,
+            message: msg
+        });
+
+        console.log(`${user.email} -> ${emailTo}: ${msg}`);
     });
 });
-
 app.get('/newTask', createMiddleware, (req, res) => {
     res.render('newTask', {user: req.user })
 })
