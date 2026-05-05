@@ -16,8 +16,9 @@
             <h2 class="logo">TaskFlow</h2>
             <nav>
                 <a href="/home" class="active">Home</a>
-                <a>Chat</a>
+                <a href="/chat">Chat</a>
                 <a href="http://10.0.0.144:8082/dashboard.php">Calendar</a>
+                <a href="/friends">Friends</a>
                 <a>Notifications</a>
                 <a>Settings</a>
                 <a href="/howTo">How to</a>
@@ -157,36 +158,6 @@
         });
     </script>
     <script>
-        const sortSelect = document.getElementById("sortSelect")
-        sortSelect.addEventListener("change", sortTasks);
-
-        function sortTasks() {
-            const sortBy = sortSelect.value;
-            const sections = document.querySelectorAll(".task-grid");
-
-            sections.forEach(section => {
-                const tasks = Array.from(section.querySelectorAll(".task-card"));
-                tasks.sort((a, b) => {
-                    if (sortBy === "date") {
-                        return new Date(a.dataset.due) - new Date(b.dataset.due);
-                    }
-
-                    if (sortBy === "priority") {
-                        const order = { high: 3, medium: 2, low: 1 };
-                        return order[b.dataset.priority] - order[a.dataset.priority];
-                    }
-
-                    if (sortBy === "progress") {
-                        return b.dataset.progress - a.dataset.progress;
-                    }
-
-                    if (sortBy === "created") {
-                        return new Date(b.dataset.created) - new Date(a.dataset.created);
-                    }
-                });
-                tasks.forEach(task=>section.appendChild(task))
-            });
-        };
 
         
     </script>
