@@ -31,29 +31,12 @@
             <!-- Chat List -->
             <div class="chat-list">
                 <h3>Chats</h3>
-
-                <div class="chat-user active">
-                    <img src="https://i.pravatar.cc/40?img=1">
-                    <div>
-                        <p>John Doe</p>
-                        <!-- <span>Hey, did you finish?</span> -->
-                    </div>
-                </div>
-
-                <div class="chat-user">
-                    <img src="https://i.pravatar.cc/40?img=2">
-                    <div>
-                        <p>Anna</p>
-                        <!-- <span>Let's meet tomorrow</span> -->
-                    </div>
-                </div>
                 <input type="text" placeholder="email" id="newChat">
                 <button class="chat-user" onclick="newChat()">
                     <h1>New Chat</h1>
-                    
                 </button>
             </div>
-
+                
             <!-- Chat Window -->
             <div class="chat-window">
                 <!-- Header -->
@@ -92,24 +75,58 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const jwt = `<%= token %>`
-        console.log(jwt)
         const form = document.querySelector(".chat-input");
         const input = document.querySelector(".input");
         const messages = document.querySelector(".chat-messages");
         const newChatInput = document.getElementById('newChat');
+        const chatlist = document.querySelector(".chat-list")
+        
         const socket = io()
+
         socket.emit("handshake", jwt)
-        function newChat() {
+
+        async function newChat() {
             const email = newChatInput.value;
-            socket.emit("new chat", email);
+
+            const res = await fetch ("/chat/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    emailto: email,
+                })
+            });
+            const data = await res.json();
+            if(data.chat === "created") {
+                socket.emit("new chat", email);
+                const div = document.createElement("div");
+                div.className = "chat-user active";
+
+                div.innerHTML = `
+                    <img src="https://i.pravatar.cc/40?img=1">
+                    <div>
+                        <p class='user-email active' value=${email}>${data.username}</p>
+                        <!-- <span>Hey, did you finish?</span> -->
+                    </div>
+                `;
+
+                chatlist.appendChild(div);
+
+                // scroll outside chat
+                chatlist.scrollTop = chatlist.scrollHeight;
+                newChatInput.value = "";
+            }
+            
         }
         
 
         form.addEventListener("submit", function(event) {
             event.preventDefault();
-
-            if (input.value && newChatInput.value) {
-                socket.emit("chat message", newChatInput.value, input.value);
+            const userEmail = document.querySelector(".user-email.active").value
+            
+            if (input.value && userEmail.value) {
+                socket.emit("chat message", userEmail.value, input.value);
             }
 
             input.value = "";

@@ -11,9 +11,23 @@ import { verifyToken } from './utils/jwt.ts';
 import { getUserByEmail } from './services/user.service.ts';
 import type { User, UserToken } from './models/user.model.ts';
 import type { JwtPayload } from 'jsonwebtoken';
+import winston from "winston";
+import LokiTransport from "winston-loki";
+import chatRoutes from './routes/chat.routes.ts'
 
-
-
+const options = {
+  transports: [
+    new LokiTransport({
+        host: "http://10.0.0.252:3100/",
+        labels: { app: 'my-app' },
+        json: true,
+        format: winston.format.json(),
+        replaceTimestamp: true,
+        onConnectionError: (err) => console.error(err),
+    })
+  ]
+};
+const logger = winston.createLogger(options);
 
 
 export const app: express.Application = express();
@@ -27,6 +41,7 @@ app.use(cookieParser());
 
 app.use('/auth', authRoutes);
 app.use('/create', createRoutes);
+app.use('/chat', chatRoutes)
 
 app.get('/', authMiddleware, (req, res) => {
     res.render('welcome')
@@ -34,6 +49,7 @@ app.get('/', authMiddleware, (req, res) => {
 
 app.get('/login', authMiddleware, (req, res) => {
     res.render('login')
+    logger.debug({ message: 'test', labels: { 'job': 'docker' } })
 });
 
 app.get('/signIn', authMiddleware, (req, res) => {
