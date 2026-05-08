@@ -9,7 +9,7 @@ export const chat = async (req: Request<{}, {}, ChatBody>, res: Response) => {
         const token = req.cookies['JWT'];
         const result = await createChat(req.body, token);
         if (result[0] && typeof result[1] !== 'undefined') {
-            res.send({chat: "created", username: result[1]})
+            res.send({chat: "created", username: result[1], imgpath: result[2]})
         }
     } catch (err) {
         if (err instanceof Error) {

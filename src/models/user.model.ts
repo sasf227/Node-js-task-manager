@@ -3,7 +3,7 @@ export type User = {
     email: string;
     password: string; 
     uuid: string;
-    profpict: string;
+    imgpath: string;
 }
 
 export type UserToken = {

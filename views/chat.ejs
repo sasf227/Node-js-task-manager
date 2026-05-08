@@ -27,14 +27,49 @@
         </aside>
 
         <!-- Chat Layout -->
+         
         <main class="chat-main">
             <!-- Chat List -->
             <div class="chat-list">
                 <h3>Chats</h3>
                 <input type="text" placeholder="email" id="newChat">
-                <button class="chat-user" onclick="newChat()">
+                <button class="newchat" onclick="newChat()">
                     <h1>New Chat</h1>
                 </button>
+                
+                <% chatsFrom.forEach((element) => { %>
+                    <div class="chat-user">
+                        
+                        
+                        <% img.forEach((imgpath) => { %>
+                            <% if (imgpath[0] === element.emailto) { %>
+                                <img src=<%= imgpath[1] %> width="49px" height="49px">
+                            <% } %>
+                        <% }) %>
+                        <div>
+                            <p><%= element.usernameto %></p>
+                            <span><%= element.emailto %></span>
+                            <!-- <span>Hey, did you finish?</span> -->
+                        </div>
+                    </div>
+                <% }) %>
+
+                <% chatsTo.forEach((element) => { %>
+                    <div class="chat-user">
+                        
+                        
+                        <% img.forEach((imgpath) => { %>
+                            <% if (imgpath[0] === element.emailto) { %>
+                                <img src=<%= imgpath[1] %> width="49px" height="49px">
+                            <% } %>
+                        <% }) %>
+                        <div>
+                            <p><%= element.usernameto %></p>
+                            <span><%= element.emailto %></span>
+                            <!-- <span>Hey, did you finish?</span> -->
+                        </div>
+                    </div>
+                <% }) %>
             </div>
                 
             <!-- Chat Window -->
@@ -46,28 +81,13 @@
                 </div>
 
                 <!-- Messages -->
-                <div class="chat-messages">
-                    <!-- <div class="message other">
-                    <p>Hey, did you finish the task?</p>
-                    <span>10:30</span>
-                    </div>
-
-                    <div class="message me">
-                        <p>Almost done, just testing it</p>
-                        <span>10:32</span>
-                    </div>
-
-                    <div class="message other">
-                    <p>Nice 👍</p>
-                    <span>10:33</span>
-                    </div> -->
-                </div>
+                <div class="chat-messages"></div>
                 
                 <!-- Input -->
-                <form class="chat-input">
-                    <input type="text" class="input" autocomplete="off" autofocus placeholder="Type a message...">
-                    <button>Send</button>
-                </form>
+                <div class="chat-input">
+                    <input type="text" class="input" id="submit-input" autocomplete="off" autofocus placeholder="Type a message...">
+                    <button id="submit-message">Send</button>
+                </div>
             </div>
         </main>
     </div>
@@ -85,7 +105,29 @@
 
         socket.emit("handshake", jwt)
 
+        
+        const chatUsers = document.querySelectorAll(".chat-user");
+        chatUsers.forEach(user => {
+
+            user.addEventListener("click", () => {
+                const userEmail = user.lastElementChild.lastElementChild.innerHTML
+                socket.emit("connect_toChat", userEmail)
+                
+                // remove active from all
+                chatUsers.forEach(u => {
+                    u.classList.remove("active");
+                });
+
+                // add active to clicked one
+                user.classList.add("active");
+
+            });
+        });
+
+
         async function newChat() {
+            const removeActive = document.querySelector(".chat-user.active")
+            if (removeActive) removeActive.classList.remove("active") 
             const email = newChatInput.value;
 
             const res = await fetch ("/chat/chat", {
@@ -104,9 +146,10 @@
                 div.className = "chat-user active";
 
                 div.innerHTML = `
-                    <img src="https://i.pravatar.cc/40?img=1">
+                    <img src=${data.imgpath} width="49px" height="49px">
                     <div>
-                        <p class='user-email active' value=${email}>${data.username}</p>
+                        <p>${data.username}</p>
+                        <span>${email}</span>
                         <!-- <span>Hey, did you finish?</span> -->
                     </div>
                 `;
@@ -120,16 +163,34 @@
             
         }
         
-
-        form.addEventListener("submit", function(event) {
+        
+        function submit () {
             event.preventDefault();
-            const userEmail = document.querySelector(".user-email.active").value
+            const removeActive = document.querySelector(".chat-user.active")
+            if (!input.value) return 
+            if (!removeActive) return
+            const userEmail = document.querySelector(".chat-user.active").lastElementChild.lastElementChild.innerHTML
             
-            if (input.value && userEmail.value) {
-                socket.emit("chat message", userEmail.value, input.value);
+            if (input.value && userEmail) {
+                socket.emit("chat message", userEmail, input.value);
             }
 
             input.value = "";
+        };
+
+        const submitMessage = document.getElementById('submit-message');
+        const submitInput = document.getElementById('submit-input');
+        submitInput.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") {
+                event.preventDefault();
+                submit();
+            }
+        });
+
+        // BUTTON click
+        submitMessage.addEventListener("click", (event) => {
+            event.preventDefault();
+            submit();
         });
 
 
@@ -137,6 +198,7 @@
             const currentUser = "<%= user.email %>";
 
             const type = data.email === currentUser ? "me" : "other";
+
 
             addMessage(data.sender, data.message, type);
         });

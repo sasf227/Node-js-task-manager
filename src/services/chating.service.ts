@@ -6,8 +6,10 @@ import type { UserToken } from "../models/user.model.ts";
 import type { JwtPayload } from "jsonwebtoken";
 import { getUserByEmail } from "./user.service.ts";
 import type { Chat } from "../models/chat.model.ts";
+import { getRoom } from "../utils/getRoom.ts";
+import { hashPassword } from "../utils/hash.ts";
 
-export const createChat = async(body: ChatBody, jwt: string): Promise<[Chat, string]> => {
+export const createChat = async(body: ChatBody, jwt: string): Promise<[Chat, string, string, string]> => {
     if (!body.emailto) {
         throw new Error("Complete missing fields");
     }
@@ -24,6 +26,9 @@ export const createChat = async(body: ChatBody, jwt: string): Promise<[Chat, str
     if (!user) {
         throw new Error ("There is no user with such email")
     }
-    const createChat = await chatInsert(user.email, userto.email, "In chat");
-    return [createChat, userto.username];
+
+    const room_uuid = getRoom(user.email, userto.email)
+    
+    const createChat = await chatInsert(user.email, userto.email, "In chat", user.username, userto.username, room_uuid);
+    return [createChat, userto.username, userto.imgpath, room_uuid];
 }

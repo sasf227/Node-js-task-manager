@@ -5,6 +5,8 @@ import { verifyToken } from "../utils/jwt.ts";
 import type { Request, Response, NextFunction } from "express";
 import { isToday, formatDistanceToNow} from "date-fns";
 import { hashPassword } from "../utils/hash.ts";
+import { chatGetByEmailFrom, chatGetByEmailTo } from "../services/chat.service.ts";
+import { getUserByEmail } from "../services/user.service.ts";
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.JWT;
@@ -42,6 +44,39 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
 
 
 };
+
+export const chatAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    const token = req.cookies.JWT;
+    if (!token) return res.redirect('/login');
+    
+    try {
+        const user = verifyToken(token);
+        req.user = user;
+        // Cryptere const hashToken = await hashPassword(token)
+        req.token = token;
+        if (typeof user === 'string' || !user || typeof (user as any).email !== 'string') {
+            return res.redirect('/login');
+        }
+        const chatsFrom = await chatGetByEmailFrom(user.email);
+        const chatsTo = await chatGetByEmailTo(user.email)
+        const chatUserImg: Array<[string, string]> = await Promise.all(
+            chatsFrom.map(async (chat) => {
+                const user = await getUserByEmail(chat.emailto)
+
+                return [chat.emailto, user.imgpath]
+            })
+        )
+        req.chatsFrom = chatsFrom
+        req.chatsTo = chatsTo
+        req.chatImg = chatUserImg
+        next();
+    } catch {
+        return res.redirect('/login');
+    };
+
+
+};
+
 
 export const createMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.JWT;

@@ -2,11 +2,11 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.ts';
 import createRoutes from './routes/taskCreate.routes.ts';
-import { authMiddleware, homeAuthMiddleware, createMiddleware } from './middleware/auth.middleware.ts';
+import { authMiddleware, homeAuthMiddleware, createMiddleware, chatAuthMiddleware } from './middleware/auth.middleware.ts';
 import dotenv from 'dotenv';
 import * as http from 'http';
 import { Server } from 'socket.io';
-import { comparePassword } from './utils/hash.ts';
+import { comparePassword, hashPassword } from './utils/hash.ts';
 import { verifyToken } from './utils/jwt.ts';
 import { getUserByEmail } from './services/user.service.ts';
 import type { User, UserToken } from './models/user.model.ts';
@@ -14,6 +14,7 @@ import type { JwtPayload } from 'jsonwebtoken';
 import winston from "winston";
 import LokiTransport from "winston-loki";
 import chatRoutes from './routes/chat.routes.ts'
+import { getRoom } from './utils/getRoom.ts';
 
 const options = {
   transports: [
@@ -72,16 +73,14 @@ app.get('/home/incompletedTasks', homeAuthMiddleware, (req, res) => {
     res.render('incompletedTasks', {user: req.user, tasks: req.tasks, dayType: req.dayType})
 });
 
-app.get('/chat', homeAuthMiddleware, (req, res) => {
-    res.render('chat', {token: req.token, user: req.user})
+app.get('/chat', chatAuthMiddleware, (req, res) => {
+    res.render('chat', {token: req.token, user: req.user, chatsFrom: req.chatsFrom, chatsTo: req.chatsTo, img: req.chatImg})
 })
 
 io.on('connection', (socket) => {
     console.log('User connected');
 
-    function getRoom(email1: string, email2: string) {
-        return [email1, email2].sort().join("_");
-    }
+    
 
     socket.on('handshake', async (jwt: string) => {
         try {
@@ -106,7 +105,7 @@ io.on('connection', (socket) => {
         const user = socket.data.user;
         if (!user) return;
 
-        const room = getRoom(user.email, emailTo);
+        const room = getRoom(user.email, emailTo)
 
         socket.join(room);
 
@@ -115,6 +114,20 @@ io.on('connection', (socket) => {
         // optional: notify user
         socket.emit('chat message', 'System', `Chat opened with ${emailTo}`);
     });
+
+    socket.on('connect_toChat', async(emailTo: string) => {
+        const user = socket.data.user;
+        if(!user) return;
+
+        const room = getRoom(user.email, emailTo)
+
+        socket.join(room);
+
+        console.log(`${user.email} joined ${room}`);
+
+        // optional: notify user
+        socket.emit('chat message', 'System', `Chat opened with ${emailTo}`);
+    })
 
     socket.on('chat message', (emailTo: string, msg: string) => {
         const user = socket.data.user;

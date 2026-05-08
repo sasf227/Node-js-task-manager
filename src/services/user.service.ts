@@ -6,7 +6,7 @@ export const getAllUsers = async () => {
     return result.rows;
 };
 
-export const getUserByEmail = async(email: string) => {
+export const getUserByEmail = async(email: string): Promise<User> => {
     const result = await pool.query(`SELECT * FROM users WHERE email = $1`, [email]);
     return result.rows[0];
 };
