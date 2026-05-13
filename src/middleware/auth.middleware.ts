@@ -1,11 +1,11 @@
 import type { JwtPayload } from "jsonwebtoken";
-import type { UserToken } from "../models/user.model.ts";
+import type { User, UserToken } from "../models/user.model.ts";
 import { findTaskbyEmail, updateTaskStatus } from "../services/task.service.ts";
 import { verifyToken } from "../utils/jwt.ts";
 import type { Request, Response, NextFunction } from "express";
 import { isToday, formatDistanceToNow} from "date-fns";
 import { hashPassword } from "../utils/hash.ts";
-import { chatGetByEmailFrom, chatGetByEmailTo } from "../services/chat.service.ts";
+import { getChatByEmail } from "../services/chat.service.ts";
 import { getUserByEmail } from "../services/user.service.ts";
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -13,7 +13,14 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
     if (!token) return res.redirect('/login');
     
     try {
-        const user = verifyToken(token);
+        const user: UserToken | JwtPayload | string  = verifyToken(token);
+        if (typeof user === "string") {
+            return res.redirect('/login')
+        }
+        const verifyUser = getUserByEmail(user.email)
+        if (!verifyUser){
+            return res.redirect('/signIn')
+        }
         req.user = user;
         // Cryptere const hashToken = await hashPassword(token)
         req.token = token;
@@ -45,38 +52,31 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
 
 };
 
+
 export const chatAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.JWT;
+        const token = req.cookies.JWT;
     if (!token) return res.redirect('/login');
     
     try {
-        const user = verifyToken(token);
-        req.user = user;
-        // Cryptere const hashToken = await hashPassword(token)
-        req.token = token;
-        if (typeof user === 'string' || !user || typeof (user as any).email !== 'string') {
-            return res.redirect('/login');
+        const user: UserToken | JwtPayload | string  = verifyToken(token);
+        if (typeof user === "string") {
+            return res.redirect('/login')
         }
-        const chatsFrom = await chatGetByEmailFrom(user.email);
-        const chatsTo = await chatGetByEmailTo(user.email)
-        const chatUserImg: Array<[string, string]> = await Promise.all(
-            chatsFrom.map(async (chat) => {
-                const user = await getUserByEmail(chat.emailto)
-
-                return [chat.emailto, user.imgpath]
-            })
-        )
-        req.chatsFrom = chatsFrom
-        req.chatsTo = chatsTo
-        req.chatImg = chatUserImg
+        const verifyUser = await getUserByEmail(user.email)
+        if (!verifyUser){
+            return res.redirect('/signIn')
+        }
+        req.user = user;
+        req.token = token;
+        
+        const chats = await getChatByEmail(verifyUser.email)
+        req.chats = chats
+        
         next();
     } catch {
         return res.redirect('/login');
-    };
-
-
-};
-
+    }
+}
 
 export const createMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.JWT;

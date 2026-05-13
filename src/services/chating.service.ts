@@ -29,6 +29,6 @@ export const createChat = async(body: ChatBody, jwt: string): Promise<[Chat, str
 
     const room_uuid = getRoom(user.email, userto.email)
     
-    const createChat = await chatInsert(user.email, userto.email, "In chat", user.username, userto.username, room_uuid);
+    const createChat = await chatInsert([[user.email], [userto.email]], [[user.username], [userto.username]], "In chat", room_uuid);
     return [createChat, userto.username, userto.imgpath, room_uuid];
 }

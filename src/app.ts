@@ -6,29 +6,13 @@ import { authMiddleware, homeAuthMiddleware, createMiddleware, chatAuthMiddlewar
 import dotenv from 'dotenv';
 import * as http from 'http';
 import { Server } from 'socket.io';
-import { comparePassword, hashPassword } from './utils/hash.ts';
 import { verifyToken } from './utils/jwt.ts';
 import { getUserByEmail } from './services/user.service.ts';
 import type { User, UserToken } from './models/user.model.ts';
 import type { JwtPayload } from 'jsonwebtoken';
-import winston from "winston";
-import LokiTransport from "winston-loki";
 import chatRoutes from './routes/chat.routes.ts'
 import { getRoom } from './utils/getRoom.ts';
 
-const options = {
-  transports: [
-    new LokiTransport({
-        host: "http://10.0.0.252:3100/",
-        labels: { app: 'my-app' },
-        json: true,
-        format: winston.format.json(),
-        replaceTimestamp: true,
-        onConnectionError: (err) => console.error(err),
-    })
-  ]
-};
-const logger = winston.createLogger(options);
 
 
 export const app: express.Application = express();
@@ -50,7 +34,6 @@ app.get('/', authMiddleware, (req, res) => {
 
 app.get('/login', authMiddleware, (req, res) => {
     res.render('login')
-    logger.debug({ message: 'test', labels: { 'job': 'docker' } })
 });
 
 app.get('/signIn', authMiddleware, (req, res) => {
@@ -74,7 +57,7 @@ app.get('/home/incompletedTasks', homeAuthMiddleware, (req, res) => {
 });
 
 app.get('/chat', chatAuthMiddleware, (req, res) => {
-    res.render('chat', {token: req.token, user: req.user, chatsFrom: req.chatsFrom, chatsTo: req.chatsTo, img: req.chatImg})
+    res.render('chat', {user: req.user, token: req.token, chats: req.chats})
 })
 
 io.on('connection', (socket) => {

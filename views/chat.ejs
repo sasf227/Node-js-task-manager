@@ -25,9 +25,9 @@
                 <a href="/howTo">How to</a>
             </nav>
         </aside>
-
+        <%= JSON.stringify(chats) %>
         <!-- Chat Layout -->
-         
+        
         <main class="chat-main">
             <!-- Chat List -->
             <div class="chat-list">
@@ -37,39 +37,6 @@
                     <h1>New Chat</h1>
                 </button>
                 
-                <% chatsFrom.forEach((element) => { %>
-                    <div class="chat-user">
-                        
-                        
-                        <% img.forEach((imgpath) => { %>
-                            <% if (imgpath[0] === element.emailto) { %>
-                                <img src=<%= imgpath[1] %> width="49px" height="49px">
-                            <% } %>
-                        <% }) %>
-                        <div>
-                            <p><%= element.usernameto %></p>
-                            <span><%= element.emailto %></span>
-                            <!-- <span>Hey, did you finish?</span> -->
-                        </div>
-                    </div>
-                <% }) %>
-
-                <% chatsTo.forEach((element) => { %>
-                    <div class="chat-user">
-                        
-                        
-                        <% img.forEach((imgpath) => { %>
-                            <% if (imgpath[0] === element.emailto) { %>
-                                <img src=<%= imgpath[1] %> width="49px" height="49px">
-                            <% } %>
-                        <% }) %>
-                        <div>
-                            <p><%= element.usernameto %></p>
-                            <span><%= element.emailto %></span>
-                            <!-- <span>Hey, did you finish?</span> -->
-                        </div>
-                    </div>
-                <% }) %>
             </div>
                 
             <!-- Chat Window -->

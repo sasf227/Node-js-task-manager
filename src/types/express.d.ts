@@ -7,8 +7,7 @@ declare module 'express-serve-static-core' {
         tasks?: any;
         dayType?: Array<Record<any, any>>;
         token?: any;
-        chatsFrom?: any;
-        chatsTo?: any;
+        chats?: any;
         chatImg?: Array<Array<string>>;
     };
 }
