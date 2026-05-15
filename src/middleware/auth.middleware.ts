@@ -7,6 +7,8 @@ import { isToday, formatDistanceToNow} from "date-fns";
 import { hashPassword } from "../utils/hash.ts";
 import { getChatByEmail } from "../services/chat.service.ts";
 import { getUserByEmail } from "../services/user.service.ts";
+import type { Chat } from "../models/chat.model.ts";
+
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.JWT;
@@ -71,6 +73,21 @@ export const chatAuthMiddleware = async (req: Request, res: Response, next: Next
         
         const chats = await getChatByEmail(verifyUser.email)
         req.chats = chats
+
+        
+        if (chats) {
+            const chatImg: Array<Array<Array<string>>> = []
+            for (const chat of chats) {
+                const user = await getUserByEmail(chat.emails[1].toString()); 
+                if (user) {
+                    chatImg.push([[user.email], [user.imgpath || "img/avatar.png"]]);
+                }
+            }
+            req.chatImg = chatImg
+        }
+
+        
+        
         
         next();
     } catch {

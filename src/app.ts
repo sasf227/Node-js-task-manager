@@ -57,7 +57,7 @@ app.get('/home/incompletedTasks', homeAuthMiddleware, (req, res) => {
 });
 
 app.get('/chat', chatAuthMiddleware, (req, res) => {
-    res.render('chat', {user: req.user, token: req.token, chats: req.chats})
+    res.render('chat', {user: req.user, token: req.token, chats: req.chats, chatImg: req.chatImg})
 })
 
 io.on('connection', (socket) => {
@@ -98,19 +98,6 @@ io.on('connection', (socket) => {
         socket.emit('chat message', 'System', `Chat opened with ${emailTo}`);
     });
 
-    socket.on('connect_toChat', async(emailTo: string) => {
-        const user = socket.data.user;
-        if(!user) return;
-
-        const room = getRoom(user.email, emailTo)
-
-        socket.join(room);
-
-        console.log(`${user.email} joined ${room}`);
-
-        // optional: notify user
-        socket.emit('chat message', 'System', `Chat opened with ${emailTo}`);
-    })
 
     socket.on('chat message', (emailTo: string, msg: string) => {
         const user = socket.data.user;

@@ -10,9 +10,6 @@ import { getRoom } from "../utils/getRoom.ts";
 import { hashPassword } from "../utils/hash.ts";
 
 export const createChat = async(body: ChatBody, jwt: string): Promise<[Chat, string, string, string]> => {
-    if (!body.emailto) {
-        throw new Error("Complete missing fields");
-    }
     const valid: UserToken | JwtPayload | string = verifyToken(jwt);
     if (!valid || typeof valid === 'string') {
         throw new Error ("Unauthorized user, login or try again later");
@@ -31,4 +28,18 @@ export const createChat = async(body: ChatBody, jwt: string): Promise<[Chat, str
     
     const createChat = await chatInsert([[user.email], [userto.email]], [[user.username], [userto.username]], "In chat", room_uuid);
     return [createChat, userto.username, userto.imgpath, room_uuid];
+}
+
+export const connectChat = async (body: ChatBody, jwt: string) => {
+    const valid: UserToken | JwtPayload | string = verifyToken(jwt);
+    if (!valid || typeof valid === 'string') {
+        throw new Error ("Unauthorized user, login or try again later");
+    }
+
+    const userto = await getUserByEmail(body.emailto)
+    if (!userto) {
+        throw new Error ("There is no user with such email")
+    }
+    
+    return [userto.username, userto.imgpath];
 }

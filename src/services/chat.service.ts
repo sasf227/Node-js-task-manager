@@ -10,3 +10,8 @@ export const getChatByEmail = async (email: string): Promise<Array<Chat>> => {
 const result = await pool.query(`SELECT * FROM chat WHERE emails[1][1] = $1`, [email]);
     return result.rows;
 }
+
+export const getByRoomId = async (room_uuid: string): Promise<Chat> => {
+    const result = await pool.query(`SELECT * FROM chat WHERE room_uuid = $1`, [room_uuid]);
+    return result.rows[0];
+}

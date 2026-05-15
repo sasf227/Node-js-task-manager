@@ -25,7 +25,6 @@
                 <a href="/howTo">How to</a>
             </nav>
         </aside>
-        <%= JSON.stringify(chats) %>
         <!-- Chat Layout -->
         
         <main class="chat-main">
@@ -36,7 +35,24 @@
                 <button class="newchat" onclick="newChat()">
                     <h1>New Chat</h1>
                 </button>
-                
+                <% chats.map((chat) => { %>
+                    <div class="chat-user">
+                        
+                            <% for (const img of chatImg) { %>
+                                <% if (chat.emails[1].toString() === img[0].toString()) { %>
+                                    <img src='<%= img[1].toString() %>' width="49px" height="49px">
+                                <% }%>
+                            <% } %>
+                        
+                        
+                        
+                        <div>
+                            <p><%= chat.usernames[1] %></p>
+                            <span><%= chat.emails[1] %></span>
+                            <!-- <span>Hey, did you finish?</span> -->
+                        </div>
+                    </div>
+                <% }) %>
             </div>
                 
             <!-- Chat Window -->
@@ -107,7 +123,7 @@
                 })
             });
             const data = await res.json();
-            if(data.chat === "created") {
+            if(data.chat === "created" || data.chat === "connected") {
                 socket.emit("new chat", email);
                 const div = document.createElement("div");
                 div.className = "chat-user active";

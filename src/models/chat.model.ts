@@ -1,7 +1,7 @@
 export type Chat = {
     id: number;
-    emails: string;
-    usernames: string
+    emails: [[string], [string]];
+    usernames: [[string], [string]];
     status: string;
     room_uuid: string;
 }
