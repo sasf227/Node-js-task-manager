@@ -57,7 +57,7 @@ app.get('/home/incompletedTasks', homeAuthMiddleware, (req, res) => {
 });
 
 app.get('/chat', chatAuthMiddleware, (req, res) => {
-    res.render('chat', {user: req.user, token: req.token, chats: req.chats, chatImg: req.chatImg})
+    res.render('chat', {user: req.user, token: req.token, chats: req.chats})
 })
 
 io.on('connection', (socket) => {

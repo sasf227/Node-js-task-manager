@@ -7,7 +7,8 @@ import { isToday, formatDistanceToNow} from "date-fns";
 import { hashPassword } from "../utils/hash.ts";
 import { getChatByEmail } from "../services/chat.service.ts";
 import { getUserByEmail } from "../services/user.service.ts";
-import type { Chat } from "../models/chat.model.ts";
+import type { Chats } from "../models/chat.model.ts";
+import { getChat_withByEmail } from "../services/chat_with.service.ts";
 
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -60,32 +61,36 @@ export const chatAuthMiddleware = async (req: Request, res: Response, next: Next
     if (!token) return res.redirect('/login');
     
     try {
-        const user: UserToken | JwtPayload | string  = verifyToken(token);
-        if (typeof user === "string") {
+        const verifyUser: UserToken | JwtPayload | string  = verifyToken(token);
+        if (typeof verifyUser === "string") {
             return res.redirect('/login')
         }
-        const verifyUser = await getUserByEmail(user.email)
-        if (!verifyUser){
+        const user = await getUserByEmail(verifyUser.email)
+        if (!user){
             return res.redirect('/signIn')
         }
         req.user = user;
         req.token = token;
         
-        const chats = await getChatByEmail(verifyUser.email)
-        req.chats = chats
-
+        const chatRooms: Array<Record<string, string | number>> = []
         
-        if (chats) {
-            const chatImg: Array<Array<Array<string>>> = []
-            for (const chat of chats) {
-                const user = await getUserByEmail(chat.emails[1].toString()); 
-                if (user) {
-                    chatImg.push([[user.email], [user.imgpath || "img/avatar.png"]]);
-                }
+     
+        const chat = await getChatByEmail(user.email);
+        const chat_with = await getChat_withByEmail(user.email);
+            
+        if (chat || chat_with) {
+            for (const chats of chat) {
+                const user = await getUserByEmail(chats.chat_with)
+                chatRooms.push({id: chats.id, email: chats.email, chat_with: chats.chat_with, status: chats.status, room_uuid: chats.room_uuid, username: user.username, imgpath: user.imgpath})
             }
-            req.chatImg = chatImg
+            for (const chats of chat_with) {
+                const user = await getUserByEmail(chats.chat_with)
+                chatRooms.push({id: chats.id, email: chats.email, chat_with: chats.chat_with, status: chats.status, room_uuid: chats.room_uuid, username: user.username, imgpath: user.imgpath})
+            }
         }
-
+        req.chats = chatRooms
+        
+       
         
         
         

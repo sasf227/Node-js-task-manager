@@ -19,6 +19,7 @@ export const chat = async (req: Request<{}, {}, ChatBody>, res: Response) => {
         const verifyUser: UserToken | JwtPayload | string = verifyToken(token)
         if (!verifyUser || typeof verifyUser === 'string') return res.status(401).send({error: "Unauthorized, log in and try again later"});
         if (typeof verifyUser === 'string') return res.status(401).send({error: "Unauthorized, log in and try again later"});
+        
         const RoomCode = getRoom(verifyUser.email, req.body.emailto)
         const isRoomExist = await getByRoomId(RoomCode)
         if (isRoomExist) {

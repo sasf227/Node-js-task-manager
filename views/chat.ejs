@@ -37,18 +37,10 @@
                 </button>
                 <% chats.map((chat) => { %>
                     <div class="chat-user">
-                        
-                            <% for (const img of chatImg) { %>
-                                <% if (chat.emails[1].toString() === img[0].toString()) { %>
-                                    <img src='<%= img[1].toString() %>' width="49px" height="49px">
-                                <% }%>
-                            <% } %>
-                        
-                        
-                        
+                        <img src='<%= chat.imgpath %>' width="49px" height="49px">
                         <div>
-                            <p><%= chat.usernames[1] %></p>
-                            <span><%= chat.emails[1] %></span>
+                            <p><%= chat.username %></p>
+                            <span><%= chat.chat_with %></span>
                             <!-- <span>Hey, did you finish?</span> -->
                         </div>
                     </div>
@@ -94,7 +86,7 @@
 
             user.addEventListener("click", () => {
                 const userEmail = user.lastElementChild.lastElementChild.innerHTML
-                socket.emit("connect_toChat", userEmail)
+                socket.emit("new chat", userEmail)
                 
                 // remove active from all
                 chatUsers.forEach(u => {
