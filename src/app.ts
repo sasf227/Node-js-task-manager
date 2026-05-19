@@ -7,8 +7,8 @@ import dotenv from 'dotenv';
 import * as http from 'http';
 import { Server } from 'socket.io';
 import { verifyToken } from './utils/jwt.ts';
-import { getUserByEmail } from './services/user.service.ts';
-import type { User, UserToken } from './models/user.model.ts';
+import { getUserByEmail } from './db/commands/user.commands.ts';
+import type { User, UserToken } from './db/models/user.model.ts';
 import type { JwtPayload } from 'jsonwebtoken';
 import chatRoutes from './routes/chat.routes.ts'
 import { getRoom } from './utils/getRoom.ts';
@@ -56,7 +56,7 @@ app.get('/home/incompletedTasks', homeAuthMiddleware, (req, res) => {
     res.render('incompletedTasks', {user: req.user, tasks: req.tasks, dayType: req.dayType})
 });
 
-app.get('/chat', chatAuthMiddleware, (req, res) => {
+app.get('/chat',  (req, res) => {
     res.render('chat', {user: req.user, token: req.token, chats: req.chats})
 })
 
@@ -113,6 +113,11 @@ io.on('connection', (socket) => {
 
         console.log(`${user.email} -> ${emailTo}: ${msg}`);
     });
+
+    socket.on('disconnect_server',() => {
+        socket.disconnect();
+        console.log("User disconnected")
+    })
 });
 app.get('/newTask', createMiddleware, (req, res) => {
     res.render('newTask', {user: req.user })

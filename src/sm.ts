@@ -6,7 +6,7 @@ import passHash from './passhash.ts'
 import cookiesAuth from './cookies.ts'
 import type {authenticate_user_signup_request, authenticate_user_login_reques, user_db_schema, keys} from './schemas.ts'
 import bodyParser from 'body-parser';
-import {pool} from './config/db_connect.ts'
+import {pool} from './db/config/db_connect.ts'
 
 
 import { v4 } from 'uuid';

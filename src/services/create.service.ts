@@ -1,7 +1,7 @@
 import { verifyToken } from "../utils/jwt.ts";
-import { insertIntoTask } from "./task.service.ts";
-import { getUserByEmail } from "./user.service.ts"
-import type { Tasks } from '../models/tasks.model.ts';
+import { insertIntoTask } from "../db/commands/task.commands.ts";
+import { getUserByEmail } from "../db/commands/user.commands.ts"
+import type { Tasks } from '../db/models/tasks.model.ts';
 
 export const createTask = async (body: TaskBody, jwtToken: string): Promise<Tasks> => {
     if (!body.title || !body.dueto || !body.priority){

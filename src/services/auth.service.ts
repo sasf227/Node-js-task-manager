@@ -1,4 +1,4 @@
-import { createUser, getUserByEmail, insertImage } from "./user.service.ts";
+import { createUser, getUserByEmail, insertImage } from "../db/commands/user.commands.ts";
 import { comparePassword, hashPassword } from '../utils/hash.ts';
 import { generateToken } from '../utils/jwt.ts';
 import { v4 } from "uuid";

@@ -1,14 +1,14 @@
 import type { JwtPayload } from "jsonwebtoken";
-import type { User, UserToken } from "../models/user.model.ts";
-import { findTaskbyEmail, updateTaskStatus } from "../services/task.service.ts";
+import type { User, UserToken } from "../db/models/user.model.ts";
+import { findTaskbyEmail, updateTaskStatus } from "../db/commands/task.commands.ts";
 import { verifyToken } from "../utils/jwt.ts";
 import type { Request, Response, NextFunction } from "express";
 import { isToday, formatDistanceToNow} from "date-fns";
 import { hashPassword } from "../utils/hash.ts";
-import { getChatByEmail } from "../services/chat.service.ts";
-import { getUserByEmail } from "../services/user.service.ts";
-import type { Chats } from "../models/chat.model.ts";
-import { getChat_withByEmail } from "../services/chat_with.service.ts";
+// import { getChatByEmail } from "../db/commands/contact.commands.ts";
+// import { getUserByEmail } from "../db/commands/user.commands.ts";
+// import type { Chats } from "../db/models/contact.model.ts";
+import { getChat_withByEmail } from "../db/commands/chat_with.commands.ts";
 
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {

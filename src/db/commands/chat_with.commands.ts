@@ -1,5 +1,5 @@
 import { pool } from "../config/db.ts";
-import type { Chats } from "../models/chat.model.ts";
+import type { Chats } from "../models/contact.model.ts";
 
 export const chat_withInsert = async (email: string, chat_with: string, status: string, room_uuid: string): Promise<Chats> => {
     const result = await pool.query(`INSERT INTO chatwith (email, chat_with, status, room_uuid) VALUES ($1, $2, $3, $4) RETURNING *`, [email, chat_with, status, room_uuid]);
