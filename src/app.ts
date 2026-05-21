@@ -12,17 +12,25 @@ import type { User, UserToken } from './models/user.model.ts';
 import type { JwtPayload } from 'jsonwebtoken';
 import chatRoutes from './routes/chat.routes.ts'
 import { getRoom } from './utils/getRoom.ts';
+import cors from "cors";
 
 
 
 export const app: express.Application = express();
 const server = http.createServer(app);
 const io = new Server(server)
+app.use(cors({
+  origin: "http://10.0.0.85:3000",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
+
 dotenv.config();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(cookieParser());
+
 
 app.use('/auth', authRoutes);
 app.use('/create', createRoutes);
@@ -114,9 +122,40 @@ io.on('connection', (socket) => {
         console.log(`${user.email} -> ${emailTo}: ${msg}`);
     });
 });
+
+app.get('/help', (req, res) => {
+    res.render('tickets')
+})
+
 app.get('/newTask', createMiddleware, (req, res) => {
     res.render('newTask', {user: req.user })
 })
+import nodemailer from "nodemailer";
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: "taskflowapp.support@gmail.com",
+    pass: process.env.LIBREDESK
+  }
+});
+
+app.post("/api/tickets", async (req, res) => {
+    const verify = verifyToken(req.cookies['JWT'])
+  await transporter.sendMail({
+    from: "taskflowapp.support@gmail.com",
+    to: "taskflowapp.support@gmail.com",
+    replyTo: req.body.email,
+    subject: req.body.subject,
+    text: `<User: ${verify.usernanme}>, 
+        Email: ${verify.email},
+        Uuid: ${verify.uuid},
+        ReplyTo: ${req.body.email}
+        Problem: ${req.body.message}`
+  });
+
+  res.json({ success: true });
+});
 
 
 

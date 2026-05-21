@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Tickets</title>
+
+    <link rel="stylesheet" href="css/reset.css">
+    <link rel="stylesheet" href="css/layout.css">
+    <link rel="stylesheet" href="css/tickets.css">
+</head>
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+    <%- include('./templates/global/sidebar') %>
+
+    <!-- Main -->
+    <main class="tickets-main">
+
+        <!-- Header -->
+        <div class="tickets-header">
+
+            <div>
+                <h1>Your Tickets</h1>
+                <p>Your issues and requests reports</p>
+            </div>
+
+            <button>Create Ticket</button>
+
+        </div>
+
+        <!-- Search -->
+        <div class="tickets-search">
+
+            <input type="text" placeholder="Search tickets...">
+
+            <select>
+                <option>All</option>
+                <option>Open</option>
+                <option>In Progress</option>
+                <option>Closed</option>
+            </select>
+
+        </div>
+
+        <!-- Tickets -->
+        <div class="tickets-list">
+
+            <!-- Ticket -->
+            <div class="ticket-card high">
+
+                <div class="ticket-top">
+
+                    <div>
+                        <h3>Login issue</h3>
+                        <span>#1042</span>
+                    </div>
+
+                    <div class="ticket-status open">
+                        Open
+                    </div>
+
+                </div>
+
+                <p class="ticket-message">
+                    User cannot log into the dashboard after resetting password.
+                </p>
+
+                <div class="ticket-footer">
+
+                    <div class="ticket-user">
+                        <img src="https://i.pravatar.cc/40?img=5">
+                        <div>
+                            <p>John Doe</p>
+                            <span>john@example.com</span>
+                        </div>
+                    </div>
+
+                    <div class="ticket-priority">
+                        High Priority
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Ticket -->
+            <div class="ticket-card medium">
+
+                <div class="ticket-top">
+
+                    <div>
+                        <h3>Task sync bug</h3>
+                        <span>#1043</span>
+                    </div>
+
+                    <div class="ticket-status progress">
+                        In Progress
+                    </div>
+
+                </div>
+
+                <p class="ticket-message">
+                    Tasks are not syncing correctly between devices.
+                </p>
+
+                <div class="ticket-footer">
+
+                    <div class="ticket-user">
+                        <img src="https://i.pravatar.cc/40?img=7">
+                        <div>
+                            <p>Anna Smith</p>
+                            <span>anna@example.com</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,45 @@
+<link rel="stylesheet" href="/css/home/tasks_stats_section.css">
+<section class="stats">
+    <div class="stat-card" data-filter="all" onclick="window.location.href='/home/totalTasks'">
+        <% let totalTasks = tasks.length %>
+        <h3><%= totalTasks %></h3>
+        <p>Total Tasks</p>
+    </div>
+
+    <div class="stat-card" data-filter="progress" style="border: 2px solid #4e73df; background: rgba(0, 62, 250, 0.247); color: #4e73df; transform: scale(0.97);" onclick="window.location.href='/home'">
+        <% let inProgress = 0 %>
+        <% tasks.map((task) => { %>
+            <% if (task.status === 'In Progress') { %>
+                <% inProgress++ %>
+            <% } %>
+        <% })%>
+        
+        <h3 style="color: #ffffff;"><%= inProgress %></h3>
+        <p style="opacity: 1;">In Progress</p>
+    </div>
+
+    <div class="stat-card" data-filter="completed" onclick="window.location.href='/home/completedTasks'">
+        <% let completed = 0 %>
+        <% tasks.map((task) => { %>
+            <% if (task.status === 'Completed') { %>
+                <% completed++ %>
+            <% } %>
+        <% })%>
+
+        <h3><%= completed %></h3>
+        <p>Completed</p>
+    </div>
+
+    
+    <div class="stat-card" data-filter="incompleted" onclick="window.location.href='/home/incompletedTasks'">
+        <% let incompleted = 0 %>
+        <% tasks.map((task) => { %>
+            <% if (task.status === 'Incompleted') { %>
+                <% incompleted++ %>
+            <% } %>
+        <% })%>
+        
+        <h3><%= incompleted %></h3>
+        <p>Incompleted</p>
+    </div>
+</section>

@@ -1,0 +1,23 @@
+<link rel="stylesheet" href="/css/home/header_home.css">
+<header class="topbar">
+    <div class="user-area">
+        <div class="user-info">
+            <h1>Good Morning 👋</h1>
+            <p class="username"><%= user.username %></p>
+            <p class="username"><%= user.email %></p>
+        </div>
+        
+        <img class="avatar" src="/img/avatar.png" alt="avatar">
+    </div>
+
+    <div class="task-controls">
+        <input class="search" id="taskSearch" placeholder="Search task">
+
+        <select id="sortSelect class="sort">
+            <option value="date">Sort by Date</option>
+                        <option value="priority">Sort by Priority</option>
+            <option value="progress">Sort by Progress</option>
+            <option value="created">Sort by Creation</option>
+        </select>
+    </div>
+</header>

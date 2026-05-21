@@ -1,0 +1,33 @@
+.logo{
+    color:#4e73df;
+    margin-bottom:40px;
+}
+
+.sidebar nav{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.sidebar nav a{
+    text-decoration:none;
+    color:#555;
+    font-weight:500;
+    cursor:pointer;
+}
+
+.sidebar nav a.active{
+    color:#4e73df;
+    font-weight:700;
+}
+
+.create-btn{
+    margin-top:auto;
+    padding:12px;
+    border:none;
+    border-radius:8px;
+    background:linear-gradient(135deg,#4e73df,#1cc88a);
+    color:white;
+    font-weight:600;
+    cursor:pointer;
+}

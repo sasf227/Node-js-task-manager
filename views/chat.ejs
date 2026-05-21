@@ -12,19 +12,7 @@
 <body>
     <div class="app">
         <!-- Sidebar (same as dashboard) -->
-        <aside class="sidebar">
-            <h2 class="logo">TaskFlow</h2>
-
-            <nav>
-                <a href="/home" class="active">Home</a>
-                <a href="/chat">Chat</a>
-                <a href="http://10.0.0.144:8082/dashboard.php">Calendar</a>
-                <a href="/friends">Friends</a>
-                <a>Notifications</a>
-                <a>Settings</a>
-                <a href="/howTo">How to</a>
-            </nav>
-        </aside>
+        <%- include('./templates/global/sidebar') %>
         <!-- Chat Layout -->
         
         <main class="chat-main">
@@ -66,7 +54,34 @@
             </div>
         </main>
     </div>
+    <button onclick="openSupport()">Report issue</button>
 
+    <div id="modal" style="display:none;">
+        <input type="email", placeholder="Your Email" id="report_email">
+        <input id="subject" placeholder="Subject" />
+        <textarea id="message" placeholder="Describe the problem"></textarea>
+        <button onclick="sendTicket()">Send</button>
+    </div>
+    <script>
+        function openSupport() {
+            document.getElementById("modal").style.display = "block";
+        }
+
+            async function sendTicket() {
+                await fetch("http://10.0.0.85:3000/api/tickets", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        subject: document.getElementById("subject").value,
+                        message: document.getElementById("message").value,
+                        email: document.getElementById("report_email").value
+                    })
+                });
+                alert("Ticket sent!");
+            }
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const jwt = `<%= token %>`

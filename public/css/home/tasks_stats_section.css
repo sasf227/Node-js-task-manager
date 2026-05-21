@@ -1,0 +1,40 @@
+.stats{
+    display:flex;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-card{
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    border: 2px solid transparent;
+    width:150px;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    transition: all 0.25s ease;
+}
+
+/* Hover effect */
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.08);
+}
+
+/* Active (selected) */
+.stat-card.active {
+    border: 2px solid #4e73df;
+    background: linear-gradient(135deg, #4e73df, #1cc88a);
+    color: white;
+}
+
+/* Text */
+.stat-card h3 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.stat-card p {
+    font-size: 14px;
+    opacity: 0.8;
+}
