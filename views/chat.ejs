@@ -23,16 +23,7 @@
                 <button class="newchat" onclick="newChat()">
                     <h1>New Chat</h1>
                 </button>
-                <% chats.map((chat) => { %>
-                    <div class="chat-user">
-                        <img src='<%= chat.imgpath %>' width="49px" height="49px">
-                        <div>
-                            <p><%= chat.username %></p>
-                            <span><%= chat.chat_with %></span>
-                            <!-- <span>Hey, did you finish?</span> -->
-                        </div>
-                    </div>
-                <% }) %>
+                
             </div>
                 
             <!-- Chat Window -->
@@ -90,8 +81,8 @@
         const messages = document.querySelector(".chat-messages");
         const newChatInput = document.getElementById('newChat');
         const chatlist = document.querySelector(".chat-list")
-        
         const socket = io()
+        socket.emit("disconnect_server")
 
         socket.emit("handshake", jwt)
 
@@ -185,9 +176,9 @@
 
 
         socket.on("chat message", function(data) {
-            const currentUser = "<%= user.email %>";
+            // const currentUser = "";
 
-            const type = data.email === currentUser ? "me" : "other";
+            // const type = data.email === currentUser ? "me" : "other";
 
 
             addMessage(data.sender, data.message, type);

@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Tasks } from '../models/tasks.model';
+import { Tasks } from '../db/models/tasks.model';
 
 declare module 'express-serve-static-core' {
     interface Request {
