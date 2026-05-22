@@ -27,9 +27,10 @@
                 <p>Your issues and requests reports</p>
             </div>
 
-            <button>Create Ticket</button>
+            <button onclick="window.location.href='/ticket'">Create Ticket</button>
 
         </div>
+
 
         <!-- Search -->
         <div class="tickets-search">
@@ -47,15 +48,16 @@
 
         <!-- Tickets -->
         <div class="tickets-list">
-
+            <%= JSON.stringify(tickets) %>
             <!-- Ticket -->
-            <div class="ticket-card high">
+            <% tickets.map((ticket) => { %>
+                <div class="ticket-card high">
 
                 <div class="ticket-top">
 
                     <div>
-                        <h3>Login issue</h3>
-                        <span>#1042</span>
+                        <h3><%= JSON.parse(ticket.last_message).title %></h3>
+                        <span>#<%= ticket.reference_number %></span>
                     </div>
 
                     <div class="ticket-status open">
@@ -65,18 +67,12 @@
                 </div>
 
                 <p class="ticket-message">
-                    User cannot log into the dashboard after resetting password.
+                    <%= JSON.parse(ticket.last_message).problem %>
                 </p>
 
                 <div class="ticket-footer">
 
-                    <div class="ticket-user">
-                        <img src="https://i.pravatar.cc/40?img=5">
-                        <div>
-                            <p>John Doe</p>
-                            <span>john@example.com</span>
-                        </div>
-                    </div>
+                   
 
                     <div class="ticket-priority">
                         High Priority
@@ -85,6 +81,8 @@
                 </div>
 
             </div>
+            <% }) %>
+            
 
             <!-- Ticket -->
             <div class="ticket-card medium">

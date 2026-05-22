@@ -2,7 +2,7 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.ts';
 import createRoutes from './routes/taskCreate.routes.ts';
-import { authMiddleware, homeAuthMiddleware, createMiddleware, chatAuthMiddleware } from './middleware/auth.middleware.ts';
+import { authMiddleware, homeAuthMiddleware, createMiddleware, chatAuthMiddleware, ticketsMiddleware } from './middleware/auth.middleware.ts';
 import dotenv from 'dotenv';
 import * as http from 'http';
 import { Server } from 'socket.io';
@@ -128,8 +128,12 @@ io.on('connection', (socket) => {
     })
 });
 
-app.get('/help', (req, res) => {
-    res.render('tickets')
+app.get('/help', ticketsMiddleware, (req, res) => {
+    res.render('tickets', {tickets: req.tickets})
+})
+
+app.get('/ticket', (req, res) => {
+    res.render('create-ticket')
 })
 
 app.get('/newTask', createMiddleware, (req, res) => {
@@ -150,13 +154,11 @@ app.post("/api/tickets", async (req, res) => {
   await transporter.sendMail({
     from: "taskflowapp.support@gmail.com",
     to: "taskflowapp.support@gmail.com",
-    replyTo: req.body.email,
-    subject: req.body.subject,
-    text: `<User: ${verify.usernanme}>, 
-        Email: ${verify.email},
-        Uuid: ${verify.uuid},
-        ReplyTo: ${req.body.email}
-        Problem: ${req.body.message}`
+    subject: `${verify.email}`,
+    text: `{"title": "${req.body.title}",
+        "issue": "${req.body.category}",
+        "priority": "${req.body.priority}",
+        "problem": "${req.body.description}"}`
   });
 
   res.json({ success: true });

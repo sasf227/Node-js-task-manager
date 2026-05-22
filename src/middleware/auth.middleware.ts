@@ -6,9 +6,10 @@ import type { Request, Response, NextFunction } from "express";
 import { isToday, formatDistanceToNow} from "date-fns";
 import { hashPassword } from "../utils/hash.ts";
 // import { getChatByEmail } from "../db/commands/contact.commands.ts";
-// import { getUserByEmail } from "../db/commands/user.commands.ts";
+import { getUserByEmail } from "../db/commands/user.commands.ts";
 // import type { Chats } from "../db/models/contact.model.ts";
 import { getChat_withByEmail } from "../db/commands/chat_with.commands.ts";
+import { getTicketByEmail } from "../db/commands/libredesk.command.ts";
 
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -51,9 +52,13 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
     } catch {
         return res.redirect('/login');
     };
-
-
 };
+
+export const ticketsMiddleware = async(req: Request, res: Response, next: NextFunction) => {
+    const tickets = await getTicketByEmail('em');
+    req.tickets = tickets;
+    next()
+}
 
 
 export const chatAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {

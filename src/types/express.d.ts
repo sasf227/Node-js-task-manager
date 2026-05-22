@@ -9,6 +9,7 @@ declare module 'express-serve-static-core' {
         token?: any;
         chats?: any;
         chatImg?: Array<Array<Array<string>>>;
+        tickets?: any
     };
 }
 
