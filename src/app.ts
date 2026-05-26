@@ -140,28 +140,62 @@ app.get('/newTask', createMiddleware, (req, res) => {
     res.render('newTask', {user: req.user })
 })
 import nodemailer from "nodemailer";
+import { getConversationId, getConversationFromId, updateMetaTicket  } from './db/commands/libredesk.command.ts';
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: "taskflowapp.support@gmail.com",
-    pass: process.env.LIBREDESK
-  }
+    service: "gmail",
+    auth: {
+        user: "taskflowapp.support@gmail.com",
+        pass: process.env.LIBREDESK
+    }
 });
 
 app.post("/api/tickets", async (req, res) => {
     const verify = verifyToken(req.cookies['JWT'])
-  await transporter.sendMail({
-    from: "taskflowapp.support@gmail.com",
-    to: "taskflowapp.support@gmail.com",
-    subject: `${verify.email}`,
-    text: `{"title": "${req.body.title}",
-        "issue": "${req.body.category}",
-        "priority": "${req.body.priority}",
-        "problem": "${req.body.description}"}`
-  });
-
-  res.json({ success: true });
+    // const result = await transporter.sendMail({
+    //     from: "taskflowapp.support@gmail.com",
+    //     to: "taskflowapp.support@gmail.com",
+    //     subject: `${req.body.title}`,
+    //     text: `${req.body.description}`,
+    //     headers: {email: 'sss'}
+    // });
+    const result2 = await transporter.sendMail({
+        from: 'taskflowapp.support@gmail.com',
+        to: 'taskflowapp.support@gmail.com',
+        subject: req.body.title,
+        text: req.body.description + `\n\nTicket ID: $1`,
+        html: `<p>${req.body.description}</p><p>Ticket ID: <b>$1}</b></p>`,
+        headers: {
+            'X-Ticket-ID': 'sdf',
+            'X-Customer-ID': req.body.customerId || 'unknown'
+        },
+        messageId: `<22w@yourdomain.com>`,
+        attachments: [{ 
+            filename: 'meta.json', 
+            content: JSON.stringify({ 
+                customerId: '1' })
+            }]
+    })
+    res.json(result2)
+    const data = result2
+    // if (result){
+    //     setTimeout(async () =>{
+    //         const messageId = result.messageId.replace(/^<|>$/g, '');
+    //         console.log(messageId)
+    //         const id = await getConversationId(messageId) 
+    //         console.log(id)
+    //         const meta = JSON({
+    //             email: verify.email,
+    //             issue: req.body.category,
+    //             pretendedPriority: req.body.priority
+    //             eachMonthOfInterval
+    //         })
+    //         const update = updateMetaTicket(meta, id.getConversationId)
+    //         const conversation = await getConversationFromId(id.conversation_id)
+    //         res.json({ result, conversation });
+    //     }, 5000)
+    // }
+  
 });
 
 
