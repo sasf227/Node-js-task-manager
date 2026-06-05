@@ -9,7 +9,8 @@ import { hashPassword } from "../utils/hash.ts";
 import { getUserByEmail } from "../db/commands/user.commands.ts";
 // import type { Chats } from "../db/models/contact.model.ts";
 import { getChat_withByEmail } from "../db/commands/chat_with.commands.ts";
-import { getTicketByEmail } from "../db/commands/libredesk.command.ts";
+import { getTicketByEmail, updateTicketAttr } from "../db/commands/libredesk.command.ts";
+import { error } from "node:console";
 
 
 export const homeAuthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
@@ -55,9 +56,25 @@ export const homeAuthMiddleware = async (req: Request, res: Response, next: Next
 };
 
 export const ticketsMiddleware = async(req: Request, res: Response, next: NextFunction) => {
-    const tickets = await getTicketByEmail('em');
-    req.tickets = tickets;
-    next()
+    const token = req.cookies.JWT;
+    if (!token) return res.redirect('/login');
+
+    try {
+        const verifyUser: UserToken | JwtPayload | string  = verifyToken(token);
+        if (typeof verifyUser === "string") {
+            return res.redirect('/login')
+        }
+        const user = await getUserByEmail(verifyUser.email)
+        if (!user){
+            return res.redirect('/signIn')
+        }
+        req.user = user;
+        const tickets = await getTicketByEmail(user.email);
+        req.tickets = tickets;
+        next();
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 

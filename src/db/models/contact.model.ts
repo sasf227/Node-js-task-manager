@@ -3,5 +3,4 @@ export type Contact = {
     userid: string;
     contactuserid: string
     status: string
-    
 }

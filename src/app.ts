@@ -140,62 +140,64 @@ app.get('/newTask', createMiddleware, (req, res) => {
     res.render('newTask', {user: req.user })
 })
 import nodemailer from "nodemailer";
-import { getConversationId, getConversationFromId, updateMetaTicket  } from './db/commands/libredesk.command.ts';
+import { getConversationId, getConversationFromId, updateMetaTicket, updateTicketAttr  } from './db/commands/libredesk.command.ts';
 
+
+// const transporter = nodemailer.createTransport({
+//     service: "gmail",
+//     auth: {
+//         user: "taskflowapp.support@gmail.com",
+//         pass: process.env.LIBREDESK
+//     }
+// });
 const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-        user: "taskflowapp.support@gmail.com",
-        pass: process.env.LIBREDESK
-    }
+  host: "smtp.gmail.com",
+  port: 587,
+  auth: {
+    user: "taskflowapp.support@gmail.com",
+    pass: process.env.LIBREDESK,
+  },
 });
 
 app.post("/api/tickets", async (req, res) => {
     const verify = verifyToken(req.cookies['JWT'])
-    // const result = await transporter.sendMail({
-    //     from: "taskflowapp.support@gmail.com",
-    //     to: "taskflowapp.support@gmail.com",
-    //     subject: `${req.body.title}`,
-    //     text: `${req.body.description}`,
-    //     headers: {email: 'sss'}
-    // });
-    const result2 = await transporter.sendMail({
-        from: 'taskflowapp.support@gmail.com',
-        to: 'taskflowapp.support@gmail.com',
-        subject: req.body.title,
-        text: req.body.description + `\n\nTicket ID: $1`,
-        html: `<p>${req.body.description}</p><p>Ticket ID: <b>$1}</b></p>`,
-        headers: {
-            'X-Ticket-ID': 'sdf',
-            'X-Customer-ID': req.body.customerId || 'unknown'
-        },
-        messageId: `<22w@yourdomain.com>`,
-        attachments: [{ 
-            filename: 'meta.json', 
-            content: JSON.stringify({ 
-                customerId: '1' })
-            }]
-    })
-    res.json(result2)
-    const data = result2
-    // if (result){
-    //     setTimeout(async () =>{
-    //         const messageId = result.messageId.replace(/^<|>$/g, '');
-    //         console.log(messageId)
-    //         const id = await getConversationId(messageId) 
-    //         console.log(id)
-    //         const meta = JSON({
-    //             email: verify.email,
-    //             issue: req.body.category,
-    //             pretendedPriority: req.body.priority
-    //             eachMonthOfInterval
-    //         })
-    //         const update = updateMetaTicket(meta, id.getConversationId)
-    //         const conversation = await getConversationFromId(id.conversation_id)
-    //         res.json({ result, conversation });
-    //     }, 5000)
-    // }
-  
+    try {
+        const result = await transporter.sendMail({
+            from: "taskflowapp.support@gmail.com",
+            to: "taskflowapp.support@gmail.com",
+            subject: `${req.body.title}`,
+            text: `${req.body.description}`,
+        });
+
+
+        async function retry(tries = 5, delayMs = 3000) {
+            setTimeout(async () => {
+                try {
+                    const source_id = result.messageId.replace(/^<|>$/g, "")
+                    const conversationId = await getConversationId(source_id)
+                    if (typeof conversationId === 'undefined') {
+                        return retry()
+                    }
+                    console.log(conversationId)
+                    const setTicketAttr = await updateTicketAttr({
+                        email: `${verify.email}`,
+                        category: `${req.body.category}`, 
+                        pretended_priority: `${req.body.priority}`,
+                        description: `${req.body.description}`}, conversationId.conversation_id);
+                    console.log(setTicketAttr)
+                    res.json({ result })
+                } catch (error) {
+                    res.json({ error })
+                }
+            }, delayMs)
+        }
+
+        retry()
+
+    } catch (error) {
+        res.json({error})
+    }
+    
 });
 
 
