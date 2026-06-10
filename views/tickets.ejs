@@ -45,69 +45,10 @@
             </select>
 
         </div>
-
+        <%= JSON.stringify(tickets) %>
         <!-- Tickets -->
-        <div class="tickets-list">
 
-            <!-- Ticket -->
-            <% tickets.map((ticket) => { %>
-                <% const status = ['Open', 'Snoozed', 'Resolved', 'Closed'] %>
-                <% const priority = ['Low', 'Medium', 'High'] %>
-                <div class="ticket-card 
-                <% if (ticket.status_id === 4) { %>
-                    Closed
-                <% } else if (ticket.status_id === 3) { %>
-                    Resolved
-                <% } else if (ticket.status_id === 2) { %>
-                    Snoozed
-                <% } else { %>
-                    <%= priority[ticket.priority_id - 1] %>
-                <% } %>">
-
-                <div class="ticket-top">
-
-                    <div>
-                        <h3><%= ticket.subject %></h3>
-                        <span>#<%= ticket.reference_number %></span>
-                    </div>
-
-                    <div class="ticket-status <% if (ticket.priority_id === null) {%>
-                            In progress
-                        <% } else {%>
-                            <%= status[ticket.status_id - 1] %>
-                        <% } %>">
-
-                        <% if (ticket.priority_id === null) {%>
-                            In progress
-                        <% } else { %>
-                            <%= status[ticket.status_id - 1] %>
-                        <% } %>
-                        
-                    </div>
-
-                </div>
-
-                <p class="ticket-message">
-                    <%= ticket.custom_attributes.description %>
-                </p>
-
-                <div class="ticket-footer">
-
-                   
-
-                    <div class="ticket-priority">
-                        <% if (ticket.priority_id === null) {%>
-                            In progress
-                        <% } else { %>
-                            Priority: <%= priority[ticket.priority_id - 1] %> 
-                        <% } %>
-                        
-                    </div>
-
-                </div>
-
-            </div>
-            <% }) %>
+            
             
 
             <!-- Ticket -->

@@ -2,29 +2,26 @@ import express from 'express';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/auth.routes.ts';
 import createRoutes from './routes/taskCreate.routes.ts';
-import { authMiddleware, homeAuthMiddleware, createMiddleware, chatAuthMiddleware, ticketsMiddleware } from './middleware/auth.middleware.ts';
+import { authMiddleware, homeAuthMiddleware, createMiddleware, chatAuthMiddleware, ticketMiddleware} from './middleware/auth.middleware.ts';
 import dotenv from 'dotenv';
 import * as http from 'http';
 import { Server } from 'socket.io';
-import { verifyToken } from './utils/jwt.ts';
+import { verifyToken} from './utils/jwt.ts';
 import { getUserByEmail } from './db/commands/user.commands.ts';
 import type { User, UserToken } from './db/models/user.model.ts';
 import type { JwtPayload } from 'jsonwebtoken';
 import chatRoutes from './routes/chat.routes.ts'
 import { getRoom } from './utils/getRoom.ts';
-import cors from "cors";
+import cors from 'cors';
+import nodemailer from 'nodemailer';
+import { getTicketById, updateTicketById } from './db/commands/libredesk.command.ts';
 
 
 
 export const app: express.Application = express();
 const server = http.createServer(app);
 const io = new Server(server)
-app.use(cors({
-  origin: "http://10.0.0.85:3000",
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
-
+app.use(cors())
 dotenv.config();
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
@@ -128,7 +125,11 @@ io.on('connection', (socket) => {
     })
 });
 
-app.get('/help', ticketsMiddleware, (req, res) => {
+app.get('/friends', (req, res) => {
+    res.render('friends', {})
+})
+
+app.get('/help', ticketMiddleware, (req, res) => {
     res.render('tickets', {tickets: req.tickets})
 })
 
@@ -139,68 +140,69 @@ app.get('/ticket', (req, res) => {
 app.get('/newTask', createMiddleware, (req, res) => {
     res.render('newTask', {user: req.user })
 })
-import nodemailer from "nodemailer";
-import { getConversationId, getConversationFromId, updateMetaTicket, updateTicketAttr  } from './db/commands/libredesk.command.ts';
 
-
-// const transporter = nodemailer.createTransport({
-//     service: "gmail",
-//     auth: {
-//         user: "taskflowapp.support@gmail.com",
-//         pass: process.env.LIBREDESK
-//     }
-// });
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  auth: {
-    user: "taskflowapp.support@gmail.com",
-    pass: process.env.LIBREDESK,
-  },
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false, // use STARTTLS (upgrade connection to TLS after connecting)
+    auth: {
+        user: process.env.LIBREDESKUSER,
+        pass: process.env.LIBREDESKPASS,
+    },
 });
 
-app.post("/api/tickets", async (req, res) => {
-    const verify = verifyToken(req.cookies['JWT'])
+
+app.post('/api/tickets', async (req, res) => {
+    const token = req.cookies.JWT
     try {
-        const result = await transporter.sendMail({
-            from: "taskflowapp.support@gmail.com",
-            to: "taskflowapp.support@gmail.com",
-            subject: `${req.body.title}`,
-            text: `${req.body.description}`,
+        const verifyUser = verifyToken(token);
+        if (typeof verifyUser === 'string') throw new Error ("Unauthorized User, please login or try again later.")
+
+        const info = await transporter.sendMail({
+            from: process.env.LIBREDESKUSER, // sender address
+            to: process.env.LIBREDESKUSER, // list of recipients
+            subject: req.body.title, // subject line
+            text: req.body.description, // plain text body
         });
+        res.send('Ticket created')
+        const source_id = info.messageId.replace("<","").replace(">","");
+        console.log(source_id)
+        let retries_count = 0
 
+        const retry = (retries: number = 5, timeoutMs: number = 3000) => {
+            if (retries_count > retries) {
+                retries_count = 0
+                return
+            };
 
-        async function retry(tries = 5, delayMs = 3000) {
             setTimeout(async () => {
                 try {
-                    const source_id = result.messageId.replace(/^<|>$/g, "")
-                    const conversationId = await getConversationId(source_id)
-                    if (typeof conversationId === 'undefined') {
-                        return retry()
+                    const ticketId = await getTicketById(source_id);
+                    console.log(ticketId.conversation_id)
+                    if(typeof ticketId === 'undefined') {
+                        retries_count ++
+                        retry()
                     }
-                    console.log(conversationId)
-                    const setTicketAttr = await updateTicketAttr({
-                        email: `${verify.email}`,
-                        category: `${req.body.category}`, 
-                        pretended_priority: `${req.body.priority}`,
-                        description: `${req.body.description}`}, conversationId.conversation_id);
-                    console.log(setTicketAttr)
-                    res.json({ result })
+                    const update = await updateTicketById({
+                        email: verifyUser.email,
+                        category: req.body.category,
+                        pretended_priority: req.body.priority,
+                        description: req.body.description
+                    }, ticketId.conversation_id)
+                    console.log(update)
+                    
                 } catch (error) {
-                    res.json({ error })
+                    
                 }
-            }, delayMs)
+            }, timeoutMs);
+            retries_count = 0
         }
-
         retry()
-
     } catch (error) {
-        res.json({error})
+        
     }
     
-});
-
-
+})
 
 app.get('/howTo', (req, res) => {
     res.render('howto')

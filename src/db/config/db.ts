@@ -12,5 +12,5 @@ export const libredesk = new Pool({
     host: '10.0.0.252',
     database: 'libredesk',
     password: 'libredesk',
-    port: 5432,
+    port: 5432
 })

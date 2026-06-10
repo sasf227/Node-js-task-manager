@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Friends - TaskFlow</title>
+
+    <link rel="stylesheet" href="/css/reset.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/friends.css">
+</head>
+<body>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <%- include('./templates/global/sidebar') %>
+
+        <main class="friends-main">
+            <div class="friends-header">
+                <h1>Friends</h1>
+                <p>Find coworkers and collaborate together.</p>
+            </div>
+
+            <!-- Search -->
+            <div class="search-box">
+                <input
+                    type="text"
+                    placeholder="Search by username or email..."
+                >
+
+                <button>
+                    Search
+                </button>
+            </div>
+
+            <!-- Search Results -->
+            <h2>Suggested Users</h2>
+
+            <div class="users-list">
+                <!-- <div class="user-card">
+                    <img src="https://i.pravatar.cc/60?img=12">
+
+                    <div class="user-info">
+                        <h3>John Doe</h3>
+                        <span>john@mail.com</span>
+                    </div>
+
+                    <button class="add-btn">
+                        + Add
+                    </button>
+                </div>
+
+                <div class="user-card">
+                    <img src="https://i.pravatar.cc/60?img=25">
+
+                    <div class="user-info">
+                        <h3>Anna Smith</h3>
+                        <span>anna@mail.com</span>
+                    </div>
+
+                    <button class="add-btn">
+                        + Add
+                    </button>
+                </div> -->
+            </div>
+
+            <!-- Pending -->
+
+            <h2>Pending Requests</h2>
+
+            <div class="users-list">
+                <div class="user-card">
+                    <img src="https://i.pravatar.cc/60?img=30">
+
+                    <div class="user-info">
+                        <h3>Michael Brown</h3>
+                        <span>michael@mail.com</span>
+                    </div>
+
+                    <div class="actions">
+                        <button class="accept-btn">
+                            Accept
+                        </button>
+
+                        <button class="decline-btn">
+                            Decline
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Friends -->
+
+            <h2>Your Friends</h2>
+
+            <div class="users-list">
+                <div class="user-card">
+                    <img src="https://i.pravatar.cc/60?img=8">
+
+                    <div class="user-info">
+                        <h3>Emily Davis</h3>
+                        <span>Online</span>
+                    </div>
+
+                    <button class="message-btn">
+                        Message
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
